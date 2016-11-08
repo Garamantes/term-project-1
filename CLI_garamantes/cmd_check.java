@@ -9,8 +9,15 @@ public class cmd_check {
 		String[] origin = cmd;
 		File file1 = new File(origin[0]);
 		if(!file1.isFile() && !origin[0].equals("-help")){
-			System.out.println("\n	no exist "+ origin[0] +" file!");
-			return false;
+			if(origin[0].equals("0")){
+				System.out.println("\n	no exist md file!");
+				return false;
+			}else
+			{
+				System.out.println("\n	no exist "+ origin[0] +" file!");
+				return false;
+			}
+			
 		}
 		
 		//test code
@@ -70,7 +77,7 @@ public class cmd_check {
 			                content += temp + "\n";
 			            }
 			             
-			            System.out.println("\n======== 파일 내용 출력 ========\n");
+			            System.out.println("\n======== This is file contents ========\n");
 			            System.out.println(content);
 			            System.out.println("=================================\n");
 			             
@@ -125,7 +132,7 @@ public class cmd_check {
 								 out.write(s1); out.newLine(); 
 								 
 								 out.close();
-								 System.out.println("	message : Success to make"+origin[1] +".html file");
+								 System.out.println("	message : Success to make"+origin[1] +" file");
 								 options(origin);
 								 break;
 							}
