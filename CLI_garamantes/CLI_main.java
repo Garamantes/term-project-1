@@ -39,7 +39,7 @@ public class CLI_main {
 		if(cmd[0].equals("-help"))
 		{
 			System.out.println("----------------------------------------------------------------");
-			System.out.println("	command line format : java -input md_file_name.md -output html_file_name.html -option option_command");
+			System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
 			System.out.println("	option command : plain / fancy / slide\n");
 			System.out.println("	you can omit -option command");
 			System.out.println("	you can input several md files");
