@@ -21,8 +21,8 @@
 > if you create file of exist name, you can see message :
 > Do you want to override exist file to new file?(Y/N)
 >
-> if you type \"Y\", html file is overrided.
-> if you type \"N\", html file is not overrided.
+> if you type "Y", html file is overrided.
+> if you type "N", html file is not overrided.
 >
 > when you type another code on this message, ypu see a same message until type "Y" or "N".
 
