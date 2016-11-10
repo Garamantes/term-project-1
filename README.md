@@ -27,6 +27,6 @@
 > when you type another code on this message, ypu see a same message until type "Y" or "N".
 
 6. option command
-> option has 3 type ( plain, fancy, slide ).
-> you can type command line, except -option and option command.
+> option command has 3 type ( plain, fancy, slide ).  
+> you can type command line, except -option and option command. 
 > if you not type -option or option command, default option is plain .
