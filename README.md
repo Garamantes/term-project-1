@@ -8,7 +8,7 @@
 3. -input command
 > you must type only .md file.  
 > you must input md files to same directory of CLI_mian.class file.   
-> you can input several .md files 
+> you can input several .md files     
 > ex) java CLI_main -input ex1.md ex2.me ex3.md -output html_file_name.html -option option_command 
 
 4. -output command
