@@ -1,6 +1,6 @@
 # term-project-1
 1. -help command
-> you can type 
+> you can type -help command if you need a help for command line.
 
 2. command line format 
 > java CLI_main -input md_file_name.md -output html_file_name.html -option option_command 
