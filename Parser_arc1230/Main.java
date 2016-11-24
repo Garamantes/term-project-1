@@ -28,8 +28,17 @@ public class Main {
 			myTestParser.addNodeToList(tempNode);
 		}
 		
+		PlainVisitor plainvisitor = new PlainVisitor();
+		
+		plainvisitor.startHtml();
+		for(int i=0;i<myTestParser.nodeList.size();i++){
+			myTestParser.nodeList.get(i).accept(plainvisitor);
+		}
+		plainvisitor.endHtml();
+		
+		
 		//myTestParser 안에 있는 nodeList에 어떤 노드들이 들어가 있는지 확인.
-		myTestParser.printAllNode();
+		//myTestParser.printAllNode();
 		
 		
 	}
