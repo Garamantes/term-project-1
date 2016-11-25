@@ -41,7 +41,8 @@ public class Node implements MDElement{
 	
 	//나중에 비지터가 방문해야함. 아직 입력받는 클래스 못씀.
 	@Override
-	public void accept() {
+	public String accept(MDElementVisitor visitor) {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}

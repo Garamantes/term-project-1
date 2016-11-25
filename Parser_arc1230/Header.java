@@ -29,4 +29,8 @@ public class Header extends Node{
 		System.out.println("level : "+level+" "+"Text : "+text);
 	}
 	
+	public String accept(MDElementVisitor visitor){
+		return visitor.visit(this);
+	}
+	
 }

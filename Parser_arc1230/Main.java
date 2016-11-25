@@ -2,17 +2,21 @@
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main {
+import org.w3c.tidy.Tidy;
+import org.w3c.tidy.TidyUtils;
 
+public class Main {
 	public static void main(String[] args) {
 		//cmd에 args를 담기 위한 변수 선언
 		String[] cmd = new String[100];
@@ -22,6 +26,7 @@ public class Main {
 		//dummyMDList 선언
 		ArrayList<String> dummyMDList = new ArrayList<String>();
 		
+		String filename="";
 		int j=0;
 		//while loop control variable
 		int x=0;
@@ -46,19 +51,8 @@ public class Main {
 		
 		/**********check "-help"*********/
 		if(cmd[0].equals("-help"))
-		{
-			System.out.println("----------------------------------------------------------------");
-			System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
-			System.out.println("	option command : plain / fancy / slide\n");
-			System.out.println("	you can omit -option command");
-			System.out.println("	you can input several md files");
-			System.out.println("	you can output several html files\n");
-			System.out.println("	But, You must enter the same number of md files and html files \n");
-			System.out.println("	you must input md files to same directory of CLI_mian.class file.");
-			System.out.println("	html files are created to directory of CLI_mian.class file.\n");
-			System.out.println("	this CLI is not support overriding html files");
-			System.out.println("----------------------------------------------------------------");
-		}else if(cmd[0].equals("-input") || cmd[0].equals("-INPUT")){//it is not -help command
+			printHelp();
+		else if(cmd[0].equals("-input") || cmd[0].equals("-INPUT")){//it is not -help command
 			while(x<100)/**********************trace cmd*******************/
 			{
 				//각 커맨드에 대해서 string array에 어디에 위치하는지 추적		
@@ -85,28 +79,12 @@ public class Main {
 				if(cmd[x].endsWith(".html")){
 					//plain 처리
 					index_op_cmd = x+1;
-					//break;
-					//check exist unnecessary code
-					/*if(!(cmd[index_op_cmd+1].equals("plain") || cmd[index_op_cmd+1].equals("fancy")||cmd[index_op_cmd+1].equals("slide")||cmd[index_op_cmd+1].equals("0")))
-					{
-						//is_necessary=false;
-						System.out.println("	error : This command line includes unnecessary code!-");
-						System.exit(0);
-					}*/
 				}
 				x++;
 			}
 			
-			
-			
-			//test code
-		/*	System.out.println("index_i_cmd :" +index_i_cmd);
-			System.out.println("index_o_cmd :" +index_o_cmd);
-			System.out.println("index_op_cmd :" +index_op_cmd);*/
-			/*System.out.println("cmd[index_op_cmd] :" +cmd[index_op_cmd]);*/
 			if(index_op_cmd!=-1){
 				if(cmd[index_op_cmd].equals("-option")||cmd[index_op_cmd].equals("-OPTION")||cmd[index_op_cmd].equals("0")||cmd[index_op_cmd].equals("")){
-					
 				}else{
 					System.out.println("	error : This command line includes unnecessary code!!!");
 					System.exit(0);
@@ -120,103 +98,49 @@ public class Main {
 			for(int f=(index_i_cmd+1);f<index_o_cmd;f++){
 				//there is .md file?
 				if(cmd[f].endsWith(".md")){
-					
 					File file = new File(cmd[f]);
 					//there is cmd[f]'s md file?
 					if(file.isFile()){
-						
 						BufferedReader br = null;
 						InputStreamReader isr = null;
 						FileInputStream fis = null;   
-						
-						//임시 변수
 				        String temp = "";
-				        //출력을 위한 변수
-				        String content = "";
 				        
 				        try {
-				            // 파일을 읽어들여 File Input 스트림 객체 생성
 				            fis = new FileInputStream(file);
-				             
-				            // File Input 스트림 객체를 이용해 Input 스트림 객체를 생서하는데 인코딩을 UTF-8로 지정
 				            isr = new InputStreamReader(fis, "UTF-8");
-				             
-				            // Input 스트림 객체를 이용하여 버퍼를 생성
 				            br = new BufferedReader(isr);
-				         
-				            // 버퍼를 한줄한줄 읽어들여 내용 추출
-				            while( (temp = br.readLine()) != null) {
-				                //content += temp + "\n";
-				                dummyMDList.add(temp);
-				            }
-				            
-				            
-				            if(index_op_cmd<=-1)
-							{
-								System.out.println("\n	error : please input correct command");
-								System.exit(0);
-							}
-				            
-				            /*test code
-				            System.out.println("\n====== This is file contents =====\n");
-				            System.out.println("	" + dummyMDList);
-				            System.out.println("=================================\n");*/
-				            check_stage=true;
-				             
-				        } catch (FileNotFoundException e) {
-				            e.printStackTrace();
-				            check_stage=false;
-				             
-				        } catch (Exception e) {
-				            e.printStackTrace();
-				            check_stage=false;
-				             
-				        } finally {
-				            try {
-				                fis.close();
-				            } catch (IOException e) {
-				                e.printStackTrace();
-				                check_stage=false;
-				            }
-				            try {
-				                isr.close();
-				            } catch (IOException e) {
-				                e.printStackTrace();
-				                check_stage=false;
-				            }
-				            try {
-				                br.close();
-				            } catch (IOException e) {
-				                e.printStackTrace();
-				                check_stage=false;
-				            }
+//============================파일에서 한 줄씩 읽어서 Token처리, node추가까지========================================
+					            // 버퍼를 한줄한줄 읽어들여 내용 추출
+					            while( (temp = br.readLine()) != null) {
+					                Node tempNode = new Node();
+					                tempNode.setToken(myTestParser.tokenize(temp));
+					            	myTestParser.addNodeToList(tempNode);
+					            }
+					            check_stage=true;
+//=============================================================================================================
+				        }catch (FileNotFoundException e) {e.printStackTrace(); check_stage=false; }
+				         catch (Exception e) {e.printStackTrace();check_stage=false;} 
+				         finally { 
+				        	 //close() 실행
+				        	 try {fis.close();isr.close();br.close();} 
+				        	 catch (IOException e) {e.printStackTrace();check_stage=false;}
 				        }
-				        for(int i=0;i<dummyMDList.size();i++){
-							//그냥 일반 노드 하나를 만들고,
-							Node tempNode = new Node();
-							
-							//dummyMDList에 있는 스트링 한줄을 myTestParser에 있는 함수인 tokenize를 사용해서 토큰리스트를 만들고
-							//그걸 tempNode에 넣는다.
-							tempNode.setToken(myTestParser.tokenize(dummyMDList.get(i)));
-							
-							//addNodeToList 메소드를 이용해서 tempNode가 어떤 노드여야 하는지 확인하고
-							//적절한 타입의 노드를 생성해서 nodeList에 추가한다.
-							myTestParser.addNodeToList(tempNode);
-						}
-						
+
 						//myTestParser 안에 있는 nodeList에 어떤 노드들이 들어가 있는지 확인.
-						myTestParser.printAllNode();
+						//myTestParser.printAllNode();
 				        
 				        
 					}else {
 						System.out.println("	there is not exist "+cmd[f]+" file");
 						check_stage=false;
 					}
+					
 				}else if(!cmd[f].endsWith(".md")){
-					System.out.println(		cmd[f]+" : this file name is not correnct\nplease input .md file");
+					System.out.println(	cmd[f]+" : this file name is not correnct\nplease input .md file");
 					check_stage=false;
 				}
-			}
+			} 
 			
 			
 			x=0;
@@ -244,6 +168,7 @@ public class Main {
 						}
 						try{
 							
+							filename = cmd[f];
 							File file2 = new File(cmd[f]);
 							String override;
 							//입력을 위한 변수
@@ -262,15 +187,19 @@ public class Main {
 									System.exit(1);
 								}else{
 									BufferedWriter out = new BufferedWriter(new FileWriter(cmd[f]));
-									 
-									 //추후에 html코드 내용을 여기다 담아서 입력해야한다.
-									 String s = "this is html code\n";
-									 String s1 = "this is other html code";
-									 
-									 //html 파일에 문자열 입력
-									 out.write(s); out.newLine(); 
-									 out.write(s1); out.newLine(); 
-									 
+	//===============================HTML 생성=============================================================	
+								
+								PlainVisitor plainvisitor = new PlainVisitor();
+								
+								out.write(plainvisitor.startHtml());
+								for(int i=0;i<myTestParser.nodeList.size();i++){
+									out.write(myTestParser.nodeList.get(i).accept(plainvisitor));
+								}
+								out.write(plainvisitor.endHtml());
+								
+									
+									
+	//======================================================================================================
 									 out.close();
 									 System.out.println("	Success to make a "+cmd[f] +" file!!\n");
 									 num_md++;
@@ -345,12 +274,46 @@ public class Main {
 					System.out.println("option error");
 				}
 			}
-			
-			
-			
-			
 		}else{///if 1st command is not -help or -input
 				System.out.println("	please input correct command!");
 		}
+	
+	
+	
+		
+	HtmlValidator jtidy = new HtmlValidator();
+	jtidy.checkHtml(filename);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	}
+	
+	
+	
+	
+	
+	public static void printHelp(){
+		System.out.println("----------------------------------------------------------------");
+		System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
+		System.out.println("	option command : plain / fancy / slide\n");
+		System.out.println("	you can omit -option command");
+		System.out.println("	you can input several md files");
+		System.out.println("	you can output several html files\n");
+		System.out.println("	But, You must enter the same number of md files and html files \n");
+		System.out.println("	you must input md files to same directory of CLI_mian.class file.");
+		System.out.println("	html files are created to directory of CLI_mian.class file.\n");
+		System.out.println("	this CLI is not support overriding html files");
+		System.out.println("----------------------------------------------------------------");
+	}
+	
+	
+	
 }

@@ -1,24 +1,28 @@
 
 public class PlainVisitor implements MDElementVisitor{
 
-	public void startHtml(){
-		System.out.println("<!DOCTYPE html>\n<html>\n<body>\n");
+	public String startHtml(){
+		String str="<!DOCTYPE html>\n<html>\n<body>\n";
+		return str;
 	}
 	
-	public void endHtml(){
-		System.out.println("\n</body>\n</html>");
+	public String endHtml(){
+		String str="\n</body>\n</html>";
+		return str;
 	}
 	
 	@Override
-	public void visit(Header header) {
+	public String visit(Header header) {
 		int level = header.getLevel();
 		String text = header.getText();
-		System.out.println("<h"+level+">"+text+"</h"+level+">");
+		String str = "<h"+level+">"+text+"</h"+level+">";
+		return str;
 	}
 
 	@Override
-	public void visit(TextNode textnode) {
-		System.out.println(textnode.getContent());
+	public String visit(TextNode textnode) {
+		String str = textnode.getContent();
+		return str;
 	}
 
 }

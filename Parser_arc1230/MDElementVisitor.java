@@ -1,5 +1,5 @@
 
 public interface MDElementVisitor {
-	public void visit(Header header);
-	public void visit(TextNode textnode);
+	public String visit(Header header);
+	public String visit(TextNode textnode);
 }

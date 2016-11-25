@@ -19,5 +19,11 @@ public class TextNode extends Node{
 		System.out.println("[Text Node]");
 		System.out.println("Text : "+ this.text);
 	}
+	
+	
+	public String accept(MDElementVisitor visitor){
+		return visitor.visit(this);
+	}
+	
 
 }

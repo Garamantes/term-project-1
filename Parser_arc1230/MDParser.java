@@ -5,16 +5,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.*;
 public class MDParser {
+	//이거 private?? public??
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 
 //============================================================================
 	//String 한 줄을 받아와서 Symbol 과 PlainText 분리해서 토큰리스트에 저장하고 그 리스트를 리턴하는 메소드
 	public List<Token> tokenize(String str){
 		//토큰리스트 생성
-		List<Token> tokenList = new ArrayList<Token>();	
+		List<Token> tokenList = new ArrayList<Token>();
 		
 		//패턴: (PlainText) 이거나 (Symbol) 들을 찾는다
-		Pattern p = Pattern.compile("([a-zA-Z0-9]+)|(\\S+)");	//아마 그룹을 추가해서 판단해야할듯 (/+\\S+) | (/+\\S)
+		Pattern p = Pattern.compile("([a-zA-Z0-9]+)|(\\S+)");
 		Matcher matcher = p.matcher(str);
 		
 		while(matcher.find()){
@@ -33,25 +34,10 @@ public class MDParser {
 				        token.setContent(matcher.group(i));
 				    	tokenList.add(token);
 		    		}
-		    		/*else if(matcher.group(i).contains("\\*")){ //backslash token구현 위함	    		
+		    		else{	//Symbol 토큰 만들어서 추가		    		
 			    		T_symbol token = new T_symbol();
 			        	token.setContent(matcher.group(i));
 				    	tokenList.add(token);
-		    		}*/else {	//Symbol 토큰 만들어서 추가		    		
-			    		//Token token = new T_symbol();
-			    		if((matcher.group(i).charAt(0)== '\\'))
-			    		{
-			    			T_plainText token = new T_plainText();
-			    			token.setContent(matcher.group(i).substring(1));
-					    	tokenList.add(token);
-			    		}
-			    		else
-			    		{
-			    			T_symbol token =new T_symbol();
-			    			token.setContent(matcher.group(i));
-					    	tokenList.add(token);
-			    		}
-			        	
 		    		}
 		        }
 		    }
@@ -68,19 +54,12 @@ public class MDParser {
 	//(temp)노드 하나를 받아와서, 그 노드가 어떤 노드인지 판별하고(헤더인지 리스트인지..)
 	//적절한 노드를 생성해서 그걸 노드 리스트에 추가하는 함수
 	public void addNodeToList(Node newNode){
-		/*if(newNode.getTokenList().size()==0)
-			System.out.print("error!!\n");
-		else
-			System.out.print("not null\n");*/
 		//노드 안에 들어있는 토큰리스트 가져오기
 		List<Token> tokenList = newNode.getTokenList();
 		
-		
-			
 		//토큰의 첫번째 요소가 Symbol인 경우와 PlainText인 경우가 있다.
 		//첫번째 요소가 Symbol인 경우
-		
-		if((newNode.getTokenList().size()!=0) && (tokenList.get(0) instanceof T_symbol)){
+		if(tokenList.get(0) instanceof T_symbol){
 			//------------------ Header Node ------------------
 			
 			//토큰의 첫번째 Symbol이 #종류인지 확인
@@ -136,23 +115,10 @@ public class MDParser {
 					nodeList.removeLast();
 					nodeList.add(header);
 				}else{System.out.println("md syntax error"); }
-			}else if(tokenList.get(0).getContent().contains("\\") ||
-					tokenList.get(0).getContent().contains("\\'") ||
-					tokenList.get(0).getContent().contains("\\*") ||
-					tokenList.get(0).getContent().contains("\\_") ||
-					tokenList.get(0).getContent().contains("\\{") ||
-					tokenList.get(0).getContent().contains("\\}") ||
-					tokenList.get(0).getContent().contains("\\[") ||
-					tokenList.get(0).getContent().contains("\\(") ||
-					tokenList.get(0).getContent().endsWith("\\)") ||
-					tokenList.get(0).getContent().endsWith("\\#") ||
-					tokenList.get(0).getContent().endsWith("\\.") ||
-					tokenList.get(0).getContent().endsWith("\\!")){//Backslash Esape 인지 check
-				System.out.println("토큰리스트에 넣을꺼" + tokenList.get(0).getContent());
 			}
 		}
 		//토큰의 첫번째 기호가 Plain Text인 경우
-		else if(newNode.getTokenList().size()!=0 && tokenList.get(0) instanceof T_plainText)
+		else if(tokenList.get(0) instanceof T_plainText)
 		{
 			//TextNode 생성
 			TextNode textnode = new TextNode();

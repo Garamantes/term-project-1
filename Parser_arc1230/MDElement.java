@@ -1,6 +1,6 @@
 
 
 public interface MDElement {
-	public void accept();
+	public String accept(MDElementVisitor visitor);
 	
 }
