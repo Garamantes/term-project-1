@@ -11,7 +11,7 @@ public class HtmlValidator {
 		Tidy tidy = new Tidy();
 		OutputStream out = null;
 		try {
-			InputStream in = new FileInputStream(".//bin//"+fileName);
+			InputStream in = new FileInputStream("./"+fileName);
 			
 			tidy.parse(in,out);
 			return tidy.getParseErrors();

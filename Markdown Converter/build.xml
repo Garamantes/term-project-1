@@ -1,0 +1,44 @@
+<project name="term-project-1" default="compile" basedir=".">
+
+  <description> </description>
+
+  <!-- global properties -->
+  <property name="source.dir" location="src"/>
+  <property name="build.dir" location="bin"/>
+  <property name="lib.dir" location="lib"/>
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+   </path>
+
+   <taskdef name="tidy" classname="org.w3c.tidy.ant.JTidyTask">
+    <classpath>
+      <pathelement location="${lib.dir}/jtidy.jar"/>
+    </classpath>
+  </taskdef>
+
+  <target name="init" description="setup project directories">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${doc.dir}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile">
+    <javac srcdir="${source.dir}" destdir="${build.dir}" classpathref="classpath" includeantruntime="false">
+
+    </javac>
+  </target>
+
+  <target name="doc" depends="init" description="generate documentation">
+    <javadoc sourcepath="${source.dir}" destdir="{doc.dir}"/>
+  </target>
+
+
+
+  <target name="clean" description="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${doc.dir}"/>
+    <delete>
+      <fileset defaultexcludes="no" dir="${source.dir}" includes="**/*~"/>
+    </delete>
+  </target>
+</project>

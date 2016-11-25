@@ -98,7 +98,7 @@ public class Main {
 			for(int f=(index_i_cmd+1);f<index_o_cmd;f++){
 				//there is .md file?
 				if(cmd[f].endsWith(".md")){
-					File file = new File(cmd[f]);
+					File file = new File("../src/"+cmd[f]);
 					//there is cmd[f]'s md file?
 					if(file.isFile()){
 						BufferedReader br = null;
@@ -169,7 +169,10 @@ public class Main {
 						try{
 							
 							filename = cmd[f];
-							File file2 = new File(cmd[f]);
+							//File file2 = new File(cmd[f]);
+							File file2 = new File("../doc/" + File.separator + cmd[f]);
+							System.out.println("======");
+							//file2.createNewFile();
 							String override;
 							//입력을 위한 변수
 							//Scanner sc =new Scanner(System.in);
