@@ -29,7 +29,8 @@ public class Node implements MDElement{
 	//각 노드가 가지고 있는 정보를 출력
 	//나중에 각 노드에서 오버라이딩 해서 사용. 
 	//역시 실제 프로그램에서 쓸 일은 없음.
-	public void printNodeInfo(){}
+	public void printNodeInfo(){
+	}
 	
 	
 	

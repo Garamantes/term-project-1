@@ -12,7 +12,7 @@ public class PlainVisitor implements MDElementVisitor{
 	}
 	
 	@Override
-	public String visit(Header header) {
+	public String visit(N_Header header) {
 		int level = header.getLevel();
 		String text = header.getText();
 		String str = "<h"+level+">"+text+"</h"+level+">";
@@ -20,7 +20,7 @@ public class PlainVisitor implements MDElementVisitor{
 	}
 
 	@Override
-	public String visit(TextNode textnode) {
+	public String visit(N_TextNode textnode) {
 		String str = textnode.getContent();
 		return str;
 	}

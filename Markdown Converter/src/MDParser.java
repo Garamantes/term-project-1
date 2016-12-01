@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.*;
@@ -13,6 +12,15 @@ public class MDParser {
 	public List<Token> tokenize(String str){
 		//토큰리스트 생성
 		List<Token> tokenList = new ArrayList<Token>();
+		
+		if(str.length()==0){
+			T_newLine token = new T_newLine();
+			token.setContent("\n");
+			tokenList.add(token);
+			return tokenList;
+		}
+		
+		
 		
 		//패턴: (PlainText) 이거나 (Symbol) 들을 찾는다
 		Pattern p = Pattern.compile("([a-zA-Z0-9]+)|(\\S+)");
@@ -40,6 +48,7 @@ public class MDParser {
 				    	tokenList.add(token);
 		    		}
 		        }
+		    	//Group3
 		    }
 		}
 		//토큰리스트 리턴
@@ -60,7 +69,7 @@ public class MDParser {
 		//토큰의 첫번째 요소가 Symbol인 경우와 PlainText인 경우가 있다.
 		//첫번째 요소가 Symbol인 경우
 		if(tokenList.get(0) instanceof T_symbol){
-			//------------------ Header Node ------------------
+//----------------------------------- Header Node -------------------------------------------
 			
 			//토큰의 첫번째 Symbol이 #종류인지 확인
 			if( tokenList.get(0).getContent().equals("#") ||
@@ -71,7 +80,7 @@ public class MDParser {
 				tokenList.get(0).getContent().equals("######") )
 			{
 				//헤더노드 생성해서 정보 전달
-				Header header = new Header();
+				N_Header header = new N_Header();
 			//1. 레벨 설정
 				header.setLevel(tokenList.get(0).getContent());
 			//2. 텍스트 설정
@@ -90,13 +99,13 @@ public class MDParser {
 			}
 			//토큰에 '=' 종류만 있고 뒤에는 아무것도 없는 경우
 			else if(tokenList.get(0).getContent().charAt(0)=='=' && tokenList.size()==1){
-				if(nodeList.getLast() instanceof TextNode){	// '='나오기 직전 노드가 텍스트노드인지 확인
+				if(nodeList.getLast() instanceof N_TextNode){	// '='나오기 직전 노드가 텍스트노드인지 확인
 					//헤더 노드 생성
-					Header header = new Header();
+					N_Header header = new N_Header();
 					//1. 레벨 설정. (= 계통은 1)
 					header.setLevel(1);
 					//2. 텍스트 설정 (직전 노드에서 텍스트를 가져와서 그걸 사용)
-					header.setText(((TextNode)nodeList.getLast()).getContent());
+					header.setText(((N_TextNode)nodeList.getLast()).getContent());
 					//이제 직전노드(텍스트만 있는)는 필요없으니까 지우고 노드리스트에 헤더노드 삽입
 					nodeList.removeLast();
 					nodeList.add(header);
@@ -104,34 +113,96 @@ public class MDParser {
 			}
 			//토큰에 '-' 종류만 있고 뒤에는 아무것도 없는 경우
 			else if(tokenList.get(0).getContent().charAt(0)=='-' && tokenList.size()==1){
-				if(nodeList.getLast() instanceof TextNode){	// '-'나오기 직전 노드가 텍스트노드인지 확인
+				if(nodeList.getLast() instanceof N_TextNode){	// '-'나오기 직전 노드가 텍스트노드인지 확인
 					//헤더 노드 생성
-					Header header = new Header();
+					N_Header header = new N_Header();
 					//1. 레벨 설정. (= 계통은 1)
 					header.setLevel(2);
 					//2. 텍스트 설정 (직전 노드에서 텍스트를 가져와서 그걸 사용)
-					header.setText(((TextNode)nodeList.getLast()).getContent());
+					header.setText(((N_TextNode)nodeList.getLast()).getContent());
 					//이제 직전노드(텍스트만 있는)는 필요없으니까 지우고 노드리스트에 헤더노드 삽입
 					nodeList.removeLast();
 					nodeList.add(header);
 				}else{System.out.println("md syntax error"); }
 			}
+			
+			
+//----------------------------------- Blockquote Node -----------------------------------------------
+			else if(tokenList.get(0).getContent().equals(">") == true){		
+				int bqLevel = 0;
+				for(int i=0;i<tokenList.size();i++){
+					if(tokenList.get(i).getContent().equals(">") == true){
+						bqLevel++;
+					}
+				}
+				System.out.println(bqLevel);
+				if(nodeList.size()>0 && nodeList.getLast() instanceof N_Blockquotes){
+					if(tokenList.size()==1){
+						((N_Blockquotes)nodeList.getLast()).addNewParagraph();
+					}
+					else{
+						String text = new String();
+						for(int i=1;i<tokenList.size();i++){
+							text = text.concat(tokenList.get(i).getContent()+ " ");
+						}
+						((N_Blockquotes)nodeList.getLast()).addToTextList(text);
+					}
+				}else{
+					N_Blockquotes bq = new N_Blockquotes();
+					String text = new String();
+					for(int i=1;i<tokenList.size();i++){
+						text = text.concat(tokenList.get(i).getContent()+ " ");
+					}
+					bq.addToTextList(text);
+					nodeList.add(bq);
+				}
+			}
+					
+//---------------------------------------------------------------------------------------------------
+
 		}
+//---------------------------------------------------------------------------------------------------
+
+//----------------------------------- Plain Text Node -----------------------------------------------
 		//토큰의 첫번째 기호가 Plain Text인 경우
 		else if(tokenList.get(0) instanceof T_plainText)
 		{
-			//TextNode 생성
-			TextNode textnode = new TextNode();
-			String text = "";
-			//단어단위로 연결된 토큰들을 한개의 문자열로 합침
-			int size = tokenList.size();
-			for(int i=0;i<size;i++){
-				text = text.concat(tokenList.get(i).getContent()+ " ");
+			if(nodeList.size() > 0 && nodeList.getLast() instanceof N_Blockquotes){
+				String text = new String();
+				for(int i=1;i<tokenList.size();i++){
+					text = text.concat(tokenList.get(i).getContent()+ " ");
+				}
+				((N_Blockquotes)nodeList.getLast()).addToTextList(text);
 			}
-			//textnode에 하나로 합친 문자열을 전달
-			textnode.setContent(text);
-			nodeList.add(textnode);
+			else{
+				//TextNode 생성
+				N_TextNode textnode = new N_TextNode();
+				String text = "";
+				//단어단위로 연결된 토큰들을 한개의 문자열로 합침
+				int size = tokenList.size();
+				for(int i=0;i<size;i++){
+					text = text.concat(tokenList.get(i).getContent()+ " ");
+				}
+				//textnode에 하나로 합친 문자열을 전달
+				textnode.setContent(text);
+				nodeList.add(textnode);
+			}
 		}
+//---------------------------------------------------------------------------------------------------
+
+		
+//-------------------- Empty Line -----------------------------------------------
+		//T_newLine 토큰인 경우
+		else if(tokenList.get(0) instanceof T_newLine){
+			N_newLine newLine = new N_newLine();
+			nodeList.add(newLine);
+		}
+				
+				
+//---------------------------------------------------------------------------------------------------
+		
+		
+
 		else{
 			System.out.println("다른 노드는 아직 구현 안됨");
 		}
