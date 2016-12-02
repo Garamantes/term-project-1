@@ -7,17 +7,17 @@ import org.w3c.tidy.TidyUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		String option = new String();
-		ArrayList<String> inputFile = new ArrayList<String>();
-		ArrayList<String> outputFile = new ArrayList<String>();
+		String option = new String();	//option 변수 (Plain, Fancy, Slide 등)
+		ArrayList<String> inputFile = new ArrayList<String>();		//.md 파일이름 리스트
+		ArrayList<String> outputFile = new ArrayList<String>();		//.html 파일이름 리스트
+		
 		//Command Line 입력 오류 확인
 		checkCLI(args, inputFile, outputFile, option);
 		
 		//Parser 객체 생성
 		MDParser mdParser = new MDParser();
 		
-		
-		
+		//파일 읽기/쓰기 준비
 		File fin = new File("src/"+inputFile.get(0));
 		File fout = new File("src/"+outputFile.get(0));
 		FileReader fr = null;
@@ -32,31 +32,30 @@ public class Main {
 			out = new BufferedWriter(fw);
 			
 			String temp=new String();
+			
+			//.md파일에서 temp로 한줄씩 읽어서 그 문자열을 처리
 			while((temp = in.readLine()) != null){
-				//System.out.println(temp);
 				Node tempNode = new Node();
 				tempNode.setToken(mdParser.tokenize(temp));
-				//tempNode.printNodeInfo();
 				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
 			
-			
+			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				mdParser.nodeList.get(i).printNodeInfo();
 			}
-			
-			System.out.println("nodeList size = "+mdParser.nodeList.size());
-			///*
+
+			//Visitor 패턴으로 plain 스타일 html 적용
 			PlainVisitor plainvisitor = new PlainVisitor();
-			
 			out.write(plainvisitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
 				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
 			}
 			out.write(plainvisitor.endHtml());
-			//*/
+			
+			//파일닫기
 			in.close();
 			out.close();
 			fr.close();
@@ -64,8 +63,9 @@ public class Main {
 			
 		} catch (IOException e) {e.printStackTrace();}
 	
-		HtmlValidator jtidy = new HtmlValidator();
 		
+		//JTidy 로 html 검사
+		HtmlValidator jtidy = new HtmlValidator();
 		jtidy.checkHtml(outputFile.get(0));
 		
 		
@@ -73,6 +73,7 @@ public class Main {
 	}
 
 
+	//========= -help 입력 시 출력 =================
 	public static void printHelp(){
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
@@ -87,6 +88,7 @@ public class Main {
 		System.out.println("----------------------------------------------------------------");
 	}
 
+	//CLI 입력 확인
 	public static void checkCLI(String[] args, ArrayList<String> inputFile, ArrayList<String> outputFile, String option){
 		int index_input = -1;
 		int index_output = -1;
@@ -201,6 +203,8 @@ public class Main {
 	
 	}
 	
+	
+	//.md, .html 확장자 확인하는 메소드
 	public static boolean checkExtension(ArrayList<String> list, String type){
 		for(int i=0;i<list.size();i++){
 			if(type.equals("in") && list.get(i).endsWith(".md")==false){
