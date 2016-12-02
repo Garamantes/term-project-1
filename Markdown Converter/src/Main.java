@@ -36,30 +36,39 @@ public class Main {
 				//System.out.println(temp);
 				Node tempNode = new Node();
 				tempNode.setToken(mdParser.tokenize(temp));
-				mdParser.addNodeToList(tempNode);
+				//tempNode.printNodeInfo();
+				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
 			
 			
-			//for(int i=0;i<mdParser.nodeList.size();i++){
-			//	mdParser.nodeList.get(i).printNodeInfo();
-			//}
+			for(int i=0;i<mdParser.nodeList.size();i++){
+				mdParser.nodeList.get(i).printNodeInfo();
+			}
 			
-			/*
+			System.out.println("nodeList size = "+mdParser.nodeList.size());
+			///*
 			PlainVisitor plainvisitor = new PlainVisitor();
 			
 			out.write(plainvisitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
+				System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
 				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
 			}
 			out.write(plainvisitor.endHtml());
-			*/
+			//*/
 			in.close();
 			out.close();
 			fr.close();
 			fw.close();
 			
 		} catch (IOException e) {e.printStackTrace();}
+	
+		HtmlValidator jtidy = new HtmlValidator();
+		
+		jtidy.checkHtml(outputFile.get(0));
+		
+		
 		
 	}
 
@@ -168,7 +177,8 @@ public class Main {
 				String newFile;
 				char yn;
 				try {
-					yn = br.readLine().charAt(0);
+					yn = 'y'; System.out.println();//이 줄 나중에 지우기.
+					//yn = br.readLine().charAt(0);
 					if(yn == 'n' || yn == 'N'){
 						while(true){
 							System.out.print("Enter new output filename : ");
