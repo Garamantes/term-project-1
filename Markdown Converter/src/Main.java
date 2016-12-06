@@ -1,308 +1,79 @@
-
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.w3c.tidy.Tidy;
-import org.w3c.tidy.TidyUtils;
+//import org.w3c.tidy.Tidy;
+//import org.w3c.tidy.TidyUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		//cmd에 args를 담기 위한 변수 선언
-		String[] cmd = new String[100];
+		String option = new String();	//option 변수 (Plain, Fancy, Slide 등)
+		ArrayList<String> inputFile = new ArrayList<String>();		//.md 파일이름 리스트
+		ArrayList<String> outputFile = new ArrayList<String>();		//.html 파일이름 리스트
 		
-		//Main내용 
-		MDParser myTestParser = new MDParser();
-		//dummyMDList 선언
-		ArrayList<String> dummyMDList = new ArrayList<String>();
+		//Command Line 입력 오류 확인
+		checkCLI(args, inputFile, outputFile, option);
 		
-		String filename="";
-		int j=0;
-		//while loop control variable
-		int x=0;
-		//check stage
-		boolean check_stage=false;
-		//check unnecessary command
-		boolean is_necessary=true;
+		//Parser 객체 생성
+		MDParser mdParser = new MDParser();
 		
-		int index_i_cmd=-1;
-		int index_o_cmd=-1;
-		int index_op_cmd=-1;
-		//cmd[] 0으로 초기화
-		for(int i=0;i<100;i++){
-			cmd[i]="0";
-		}
+		//파일 읽기/쓰기 준비
+		File fin = new File(args[1]);
+		File fout = new File(args[3]);
+		FileReader fr = null;
+		FileWriter fw = null;
+		BufferedReader in = null;
+		BufferedWriter out = null;
 		
-		//cmd[]에 args[]내용 담기
-		for(String e : args){
-			cmd[j]=e;
-			j++;
-		}
-		
-		/**********check "-help"*********/
-		if(cmd[0].equals("-help"))
-			printHelp();
-		else if(cmd[0].equals("-input") || cmd[0].equals("-INPUT")){//it is not -help command
-			while(x<100)/**********************trace cmd*******************/
-			{
-				//각 커맨드에 대해서 string array에 어디에 위치하는지 추적		
-				if(cmd[x].equals("-input") || cmd[x].equals("-INPUT")){
-					index_i_cmd = x;
-					//break;
-				}else if(cmd[x].equals("-output") || cmd[x].equals("-OUTPUT")){
-					index_o_cmd = x;
-					//break;
-				}else if(cmd[x].equals("-option") || cmd[x].equals("-OPTION")){
-					index_op_cmd = x;
-					//break;
-					System.out.println(cmd[index_op_cmd+1]);
-					if(!cmd[index_op_cmd+2].equals("0")){
-						System.out.println("	error : This command line includes unnecessary code!-");
-						System.exit(0);
-					}
-					if(!cmd[index_op_cmd+1].equals("fancy")&&!cmd[index_op_cmd+1].equals("plain")&&!cmd[index_op_cmd+1].equals("slide")&& !cmd[index_op_cmd+1].equals("0")){
-						System.out.println("	error : This command line includes unnecessary code!*");
-						System.exit(0);
-					}
-				}
-				
-				if(cmd[x].endsWith(".html")){
-					//plain 처리
-					index_op_cmd = x+1;
-				}
-				x++;
+		try {
+			fr = new FileReader(fin);
+			in = new BufferedReader(fr);
+			fw = new FileWriter(fout);
+			out = new BufferedWriter(fw);
+			
+			String temp=new String();
+			
+			//.md파일에서 temp로 한줄씩 읽어서 그 문자열을 처리
+			while((temp = in.readLine()) != null){
+				Node tempNode = new Node();
+				tempNode.setToken(mdParser.tokenize(temp));
+				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
-			if(index_op_cmd!=-1){
-				if(cmd[index_op_cmd].equals("-option")||cmd[index_op_cmd].equals("-OPTION")||cmd[index_op_cmd].equals("0")||cmd[index_op_cmd].equals("")){
-				}else{
-					System.out.println("	error : This command line includes unnecessary code!!!");
-					System.exit(0);
-				}
+			
+			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
+			for(int i=0;i<mdParser.nodeList.size();i++){
+				mdParser.nodeList.get(i).printNodeInfo();
 			}
-			
-			x=0;
-			
-			/**************check input files******************/
-			
-			for(int f=(index_i_cmd+1);f<index_o_cmd;f++){
-				//there is .md file?
-				if(cmd[f].endsWith(".md")){
-					File file = new File("../src/"+cmd[f]);
-					//there is cmd[f]'s md file?
-					if(file.isFile()){
-						BufferedReader br = null;
-						InputStreamReader isr = null;
-						FileInputStream fis = null;   
-				        String temp = "";
-				        
-				        try {
-				            fis = new FileInputStream(file);
-				            isr = new InputStreamReader(fis, "UTF-8");
-				            br = new BufferedReader(isr);
-//============================파일에서 한 줄씩 읽어서 Token처리, node추가까지========================================
-					            // 버퍼를 한줄한줄 읽어들여 내용 추출
-					            while( (temp = br.readLine()) != null) {
-					                Node tempNode = new Node();
-					                tempNode.setToken(myTestParser.tokenize(temp));
-					            	myTestParser.addNodeToList(tempNode);
-					            }
-					            check_stage=true;
-//=============================================================================================================
-				        }catch (FileNotFoundException e) {e.printStackTrace(); check_stage=false; }
-				         catch (Exception e) {e.printStackTrace();check_stage=false;} 
-				         finally { 
-				        	 //close() 실행
-				        	 try {fis.close();isr.close();br.close();} 
-				        	 catch (IOException e) {e.printStackTrace();check_stage=false;}
-				        }
 
-						//myTestParser 안에 있는 nodeList에 어떤 노드들이 들어가 있는지 확인.
-						//myTestParser.printAllNode();
-				        
-				        
-					}else {
-						System.out.println("	there is not exist "+cmd[f]+" file");
-						check_stage=false;
-					}
-					
-				}else if(!cmd[f].endsWith(".md")){
-					System.out.println(	cmd[f]+" : this file name is not correnct\nplease input .md file");
-					check_stage=false;
-				}
-			} 
-			
-			
-			x=0;
-			/*******************check output********************/
-			if(check_stage==true){
-				int num_md=0;
-				int count_md=(index_o_cmd-index_i_cmd-1);
-				int count_html=(index_op_cmd-index_o_cmd-1);
-				
-				for(int f=(index_o_cmd+1);f<index_op_cmd;f++){
-					//there is .md file?
-				//change to create only first html file	
-				//int f=(index_o_cmd+1);
-					
-					if((num_md<count_md) && cmd[f].endsWith(".html")){
-						//test code
-						/*System.out.println("이거다 num_md : "+ num_md);
-						System.out.println("이거다 count_md : "+ count_md);
-						System.out.println("이거다 count_html : "+ count_html);*/
-						if(count_html != count_md)
-						{
-							System.out.println("number of md files and html files is not equal ");
-							System.out.println("please input same number of md files and html files");
-							System.exit(1);
-						}
-						try{
-							
-							filename = cmd[f];
-							//File file2 = new File(cmd[f]);
-							File file2 = new File("../doc/" + File.separator + cmd[f]);
-							System.out.println("======");
-							//file2.createNewFile();
-							String override;
-							//입력을 위한 변수
-							//Scanner sc =new Scanner(System.in);
-							
-							//there is same name file already??
-							while(true){
-								if(file2.isFile())
-								{
-									System.out.println("	warning : already exist "+cmd[f]+" file of same name!");
-									//System.out.println("	Do you want to override exist file to new file?(Y/N)\n");
-									//override = sc.nextLine();
-									
-									System.out.println("	please enter the html file of another name.");
-									
-									System.exit(1);
-								}else{
-									BufferedWriter out = new BufferedWriter(new FileWriter(cmd[f]));
-	//===============================HTML 생성=============================================================	
-								
-								PlainVisitor plainvisitor = new PlainVisitor();
-								
-								out.write(plainvisitor.startHtml());
-								for(int i=0;i<myTestParser.nodeList.size();i++){
-									out.write(myTestParser.nodeList.get(i).accept(plainvisitor));
-								}
-								out.write(plainvisitor.endHtml());
-								
-									
-									
-	//======================================================================================================
-									 out.close();
-									 System.out.println("	Success to make a "+cmd[f] +" file!!\n");
-									 num_md++;
-									 break;
-								}
-								
-							}//while
-						}catch(IOException ex){
-							System.err.println(ex);
-							System.exit(1);
-						}
-					}else if(!cmd[f].endsWith(".html"))//it is not html file
-					{
-						System.out.println("\n	please type correct html file name in legal format");
-						System.out.println("	legal output file format is \"outputFileName.html\"");
-					}
-				}//for
-			}else
-			{
-				//if(check_stage=false){
-					System.out.println("	error : please input correct command");
-				//}
-				
+			//Visitor 패턴으로 plain 스타일 html 적용
+			PlainVisitor plainvisitor = new PlainVisitor();
+			out.write(plainvisitor.startHtml());
+			for(int i=0;i<mdParser.nodeList.size();i++){
+				System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
+				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
 			}
+			out.write(plainvisitor.endHtml());
 			
-			x=0;
-			/*************check options************/
-			if(check_stage==true){
-				
-				if(index_op_cmd !=404){
-					if(cmd[index_op_cmd+1].equals("plain")){
-						//plain();
-						System.out.println("	output html file style is plain\n");
-					}
-					else if(cmd[index_op_cmd+1].equals("fancy")){
-						//fancy();
-						System.out.println("	output html file style is fancy\n");
-					}
-					else if(cmd[index_op_cmd+1].equals("slide")){
-						//slide();
-						System.out.println("	output html file style is slide\n");
-					}
-					else
-					{
-						if(index_op_cmd<=-1)
-						{
-							System.out.println("\n	error : please input correct command");
-							System.exit(0);
-						}
-							
-						if(cmd[index_op_cmd].equals("-option")||cmd[index_op_cmd].equals("-OPTION"))
-						{
-							
-						}else{
-							if(!cmd[index_op_cmd+2].equals("0") || !cmd[index_op_cmd+1].equals("0") || !cmd[index_op_cmd].equals("0"))
-							{	//is_necessary=false;
-								System.out.println("\n	error : This command line includes unnecessary code");
-								System.exit(0);
-							}
-						}
-						if(!cmd[index_op_cmd+1].equals("plain") &&!cmd[index_op_cmd+1].equals("fancy")&&!cmd[index_op_cmd+1].equals("slide")&&!cmd[index_op_cmd+1].equals("0"))
-						{
-							System.out.println("this : " +cmd[index_op_cmd+1] );	
-							System.out.println("\n	error : This command line includes unnecessary code*");
-							System.exit(0);
-						}else{
-							System.out.println("	output html file default style is plain\n");
-						}
-						
-					}
-				}else{
-					System.out.println("option error");
-				}
-			}
-		}else{///if 1st command is not -help or -input
-				System.out.println("	please input correct command!");
-		}
-	
-	
+			//파일닫기
+			in.close();
+			out.close();
+			fr.close();
+			fw.close();
+			
+		} catch (IOException e) {e.printStackTrace();}
 	
 		
-	HtmlValidator jtidy = new HtmlValidator();
-	jtidy.checkHtml(filename);
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		//JTidy 로 html 검사
+		//HtmlValidator jtidy = new HtmlValidator();
+		//jtidy.checkHtml(outputFile.get(0));
+		
+		
+		
 	}
-	
-	
-	
-	
-	
+
+
+	//========= -help 입력 시 출력 =================
 	public static void printHelp(){
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
@@ -316,7 +87,135 @@ public class Main {
 		System.out.println("	this CLI is not support overriding html files");
 		System.out.println("----------------------------------------------------------------");
 	}
+
+	//CLI 입력 확인
+	public static void checkCLI(String[] args, ArrayList<String> inputFile, ArrayList<String> outputFile, String option){
+		int index_input = -1;
+		int index_output = -1;
+		int index_option = -1;
+		int input_count = 0;
+		int output_count = 0;
+
+		
+		
+		if(args.length == 0){
+			System.out.println("No argument");
+			System.exit(0);
+		}		
+		//1. args0 이 help => help page 띄움
+		else if(args[0].equals("-help") || args[0].equals("-HELP"))
+			printHelp();
+		//2. help가 아니라면, input, output, option의 위치 기억
+		else{
+			int i=0;
+			while(i<args.length){
+				if(args[i].equals("-input") || args[i].equals("-INPUT"))
+					index_input = i;
+				else if(args[i].equals("-output") || args[i].equals("-OUTPUT"))
+					index_output = i;
+				else if(args[i].equals("-option") || args[i].equals("-OPTION"))
+					index_output = i;
+				i++;
+			}
+			//input, output을 안썼거나 input, output, option 순서를 틀린 경우
+			if(index_input == -1 || index_output == -1 ||
+				index_input>index_output || index_option>index_output ||
+				index_output - index_input == 1){
+				System.out.println("Wrong command. Check -help for commnad line syntax");
+				System.exit(0);
+			}
+			//input과 output 파일의 개수 확인
+			input_count = index_output - index_input;
+			if(index_option != -1)
+				output_count = index_option - index_output;
+			else
+				output_count = args.length - index_output;
+			
+			if(input_count != output_count || input_count <= 0 || output_count <= 0){
+				System.out.println("Number of input files and output files doesn't match");
+				System.exit(0);
+			}
+			
+			//option 변수에 option값 전달
+			if(index_option	== -1)
+				option = "plain";
+			else if(!args[index_option+1].equals("plain") ||!args[index_option+1].equals("fancy") ||!args[index_option+1].equals("slide")){
+				System.out.println("Wrong option");
+				System.exit(0);
+			}else
+				option = args[index_option+1];
+
+			//inputFile리스트에 input 파일이름 저장, outputFile리스트에 output 파일이름 저장
+			for(int k=1;k<index_output-index_input;k++){
+				inputFile.add(args[index_input+k]);
+				outputFile.add(args[index_output+k]);
+			}
+		}
+		
+		
+		//확장자 확인
+		if(checkExtension(inputFile, "in")==false || checkExtension(outputFile, "out") == false)
+			System.exit(0);
+		
+		
+		
+		//Input파일 존재여부 확인
+		for(int i=0;i<inputFile.size();i++){
+			File file = new File(inputFile.get(i));
+			if(file.exists()==false){
+				System.out.println("No input file. Check file name");
+				System.exit(0);
+			}
+		}
+		
+		//Output파일 확인
+		for(int i=0;i<outputFile.size();i++){
+			File file = new File(outputFile.get(i));
+			if(file.isFile() == true){
+				System.out.println("There already exists file: "+outputFile.get(i));
+				System.out.print("Overwrite? (y/n)");
+				InputStreamReader ir = new InputStreamReader(System.in);
+				BufferedReader br = new BufferedReader(ir);
+				String newFile;
+				char yn;
+				try {
+					yn = 'y'; System.out.println();//이 줄 나중에 지우기.
+					//yn = br.readLine().charAt(0);
+					if(yn == 'n' || yn == 'N'){
+						while(true){
+							System.out.print("Enter new output filename : ");
+							newFile = br.readLine();
+							if(newFile.endsWith(".html")==false)
+								System.out.println("Wrong filename");
+							else{
+								outputFile.add(i,newFile);
+								outputFile.remove(i+1);
+								i--;
+								break;								
+							}
+						}
+					}else{
+						//overwrite
+					}
+				} catch (IOException e) {e.printStackTrace();}	
+			}
+		}
+	
+	}
 	
 	
-	
+	//.md, .html 확장자 확인하는 메소드
+	public static boolean checkExtension(ArrayList<String> list, String type){
+		for(int i=0;i<list.size();i++){
+			if(type.equals("in") && list.get(i).endsWith(".md")==false){
+				System.out.println("Wrong extension. \nUse .md for Input");
+				return false;
+			}else if(type.equals("out") && list.get(i).endsWith(".html")==false){
+				System.out.println("Wrong extension. \nUse .html for Output");
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

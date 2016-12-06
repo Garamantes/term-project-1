@@ -1,0 +1,9 @@
+diff a/Markdown Converter/src/MDParser.java b/Markdown Converter/src/MDParser.java	(rejected hunks)
+@@ -119,7 +119,6 @@
+ 					//1. ���� ����. (= ������ 1)
+ 					header.setLevel(2);
+ 					//2. �ؽ�Ʈ ���� (���� ��忡�� �ؽ�Ʈ�� �����ͼ� �װ� ���)
+-					header.setText(((TextNode)nodeList.getLast()).getContent());
+ 					header.setText(((N_TextNode)nodeList.getLast()).getContent());
+ 					//���� �������(�ؽ�Ʈ�� �ִ�)�� �ʿ�����ϱ� ����� ��帮��Ʈ�� ������ ����
+ 					nodeList.removeLast();

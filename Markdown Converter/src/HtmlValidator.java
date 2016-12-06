@@ -1,5 +1,6 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -11,11 +12,12 @@ public class HtmlValidator {
 		Tidy tidy = new Tidy();
 		OutputStream out = null;
 		try {
-			InputStream in = new FileInputStream("./"+fileName);
+			InputStream in = new FileInputStream("src/"+fileName);
 			
 			tidy.parse(in,out);
+			in.close();
 			return tidy.getParseErrors();
-		} catch (FileNotFoundException e) {e.printStackTrace();	}
+		}  catch (IOException e) {e.printStackTrace();}
 		
 		//Code should not reach here
 		return -1;
