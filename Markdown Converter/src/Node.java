@@ -6,14 +6,15 @@ import java.util.List;
 public class Node implements MDElement{
 	private List<Token> tokenList; 
 	public Node(){}
+	public Node(List<Token> tokenList){ setToken(tokenList); }
 	
 	//토큰 리스트 setter
 	public void setToken(List<Token> token){
-		tokenList = token;
+		this.tokenList = token;
 	}
 	//토큰 리스트 getter
 	public List<Token> getTokenList(){
-		return tokenList;
+		return this.tokenList;
 	}
 	
 	//이 노드가 들고있는 토큰 리스트 출력해주는 함수. 
@@ -29,7 +30,9 @@ public class Node implements MDElement{
 	//각 노드가 가지고 있는 정보를 출력
 	//나중에 각 노드에서 오버라이딩 해서 사용. 
 	//역시 실제 프로그램에서 쓸 일은 없음.
-	public void printNodeInfo(){}
+	public void printNodeInfo(){
+		printTokens(this.tokenList);
+	}
 	
 	
 	

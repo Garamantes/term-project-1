@@ -5,7 +5,7 @@
  * 중간에 HTML이 들어가는 경우는 따로 구현.
  */
 
-public class TextNode extends Node{
+public class N_TextNode extends Node{
 	private String text;
 	
 	public void setContent(String text){
