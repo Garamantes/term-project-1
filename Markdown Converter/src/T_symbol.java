@@ -4,5 +4,8 @@
  */
 
 public class T_symbol extends Token{
-	
+	public T_symbol(){}
+	public T_symbol(String str){
+		this.setContent(str);
+	}
 }

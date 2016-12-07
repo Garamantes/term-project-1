@@ -9,3 +9,11 @@
 > normal BQ
 > > NestedBQ again
 > return shell_exec (" echo $input | $markdown_script ");
+
+\9 literal asterisks \*
+
+[ This link ](http://example.net/ "title") has no title attribute .
+See my [About](/about/) page for details .
+This is [an example] [id] reference - style link.
+
+[id]: http://example.com/ "Optional Title Here"

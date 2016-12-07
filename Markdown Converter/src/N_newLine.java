@@ -5,4 +5,8 @@ public class N_newLine extends Node{
 		System.out.println("[New Line Node]");
 	}
 	
+	public String accept(MDElementVisitor visitor){
+		return visitor.visit(this);
+	}
+	
 }

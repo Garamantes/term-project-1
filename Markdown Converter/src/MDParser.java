@@ -1,50 +1,79 @@
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.*;
+
+import org.omg.Messaging.SyncScopeHelper;
 public class MDParser {
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	List<Token> tokenList = new LinkedList<Token>();
+	public HashMap<String, String[]> urlList = new HashMap<String,String[]>(); //[0]: url , [1]:title
 	boolean bqFlag = false;
 
 //=========tokenize: String을 받아서 토큰리스트 리턴==============================
 	public List<Token> tokenize(String str){
 		List<Token> tokenList = new ArrayList<Token>();
+		
+		//만약 String 이 \n만 있다면 NewLine 토큰 생성
 		if(str.length()==0){
 			T_newLine token = new T_newLine();
 			token.setContent("\n");
 			tokenList.add(token);
 			return tokenList;
 		}
+		
 		//패턴: (PlainText) 이거나 (Symbol) 들을 찾는다
-		Pattern p = Pattern.compile("([a-zA-Z0-9]+)|(\\S+)");
+		Pattern p = Pattern.compile("(\\_{1,2}[a-zA-Z0-9 ]+\\_{1,2})|"	//Group1 : Emphasis _~~_ or __~~__
+								  + "(\\*{1,2}[a-zA-Z0-9 ]+\\*{1,2})|"	//Group2 : Emphasis *~~* or **~~**
+								  + "(!\\[[a-zA-Z0-9 ]+\\])"			//Group3 : Image ![~~~~]
+								  + "|(\\[[a-zA-Z0-9 ]+\\])"			//Group4 : Link [~~~~]
+								  + "|(\\(.*\\))"						//Group5 : Link (http://~~)
+								  + "|(\\w+)"							//Group6 : text
+								  + "|(\\S+)");							//Group7 : symbol
+
 		Matcher matcher = p.matcher(str);
 		
 		while(matcher.find()){
+			//i=그룹번호. 1~7까지 중에 맞는 그룹을 매칭해서 토큰을 생성, 추가한다.
 			for (int i = 1; i <= matcher.groupCount(); i++) {
-				//Group1: 이 토큰이 plainText라면 PlainText토큰 노드를 생성해서 setContent하고(텍스트추가) 토큰리스트에 추가
-		    	if(i==1 && matcher.group(i) != null){
-			        T_plainText token = new T_plainText();
-			        token.setContent(matcher.group(i));
-			    	tokenList.add(token);
-		        }
-				//Group2: 이 토큰이 symbol이라면 MDSymbol토큰 노드를 생성해서 setContent하고(텍스트추가) 토큰리스트에 추가
-		    	else if(i==2 && matcher.group(i) != null ){
-		    		//Symbol 중 < 로 시작하는건 HTML로 처리해야되는데 일단 보류하고 여기선 plainText처럼 처리...
-		    		if(matcher.group(i).charAt(0) == '<'){
-		    			T_plainText token = new T_plainText();
-				        token.setContent(matcher.group(i));
-				    	tokenList.add(token);
-		    		}
-		    		else{	//Symbol 토큰 만들어서 추가		    		
-			    		T_symbol token = new T_symbol();
-			        	token.setContent(matcher.group(i));
-				    	tokenList.add(token);
-		    		}
-		        }
-		    	//Group3
-		    }
+				if(i==1 && matcher.group(i)!=null){	tokenList.add(new T_emphasis(matcher.group(i)));}
+				else if(i==2 && matcher.group(i)!=null){tokenList.add(new T_emphasis(matcher.group(i)));}
+				else if(i==3 && matcher.group(i)!=null){tokenList.add(new T_image(matcher.group(i)));}
+				else if(i==4 && matcher.group(i)!=null){tokenList.add(new T_link(matcher.group(i)));}
+				else if(i==5 && matcher.group(i)!=null){
+					if(tokenList.get(tokenList.size()-1) instanceof T_link)
+						tokenList.add(new T_link(matcher.group(i)));
+					else
+						tokenList.add(new T_plainText(matcher.group(i)));
+					}
+				else if(i==6 && matcher.group(i)!=null){tokenList.add(new T_plainText(matcher.group(i)));}
+				else if(i==7 && matcher.group(i)!=null){
+					//Symbol 중 < 로 시작하는건 HTML로 처리해야되는데 일단 보류하고 여기선 plainText처럼 처리...
+					if(matcher.group(i).charAt(0) == '<'){tokenList.add(new T_plainText(matcher.group(i)));}
+					else if(matcher.group(i).charAt(0)=='[' && matcher.group(i).charAt(1)==']'){
+						tokenList.add(new T_link("[]"));
+					}
+					//Backslash escape
+		    		else if(matcher.group(i).charAt(0)=='\\'){
+		    			//시작이 '\'로 시작하고, 그 뒤에 오는 문자가 backslash escape 중에 하나라면 '\' 지우고 뒷부분 plainText로
+		    			//ex) '\*' -> *를 plaintext 토큰으로
+		    			if(backslashEsc(matcher.group(i).charAt(1))){
+			    			tokenList.add(new T_plainText(String.valueOf(matcher.group(i).charAt(1))));
+			    			
+			    			//혹시 '\**' 이런게 왔으면 '\*'뒤에 있는 다른 symbol은 symbol 토큰으로.
+			    			if(matcher.group(i).length()>2){tokenList.add(new T_symbol(matcher.group(i).substring(2,matcher.group().length())));}
+			    		
+			    		//'\' 뒤에 오는 문자가 backslash escape에 해당되는 문자가 아니라면 그냥 text 처리
+		    			}else{tokenList.add(new T_plainText(matcher.group(i)));}
+		    		}	
+					//'<'나 '\' 같은 케이스가 아니라면 그냥 일반 symbol 토큰으로 처리
+		    		else{tokenList.add(new T_symbol(matcher.group(i)));}
+				}
+				else{ //matcher.group(i)==null 이거나 패턴이 없는 경우
+				}
+			}
 		}
 		//토큰리스트 리턴
 		return tokenList;
@@ -75,22 +104,59 @@ public class MDParser {
 		//첫 토큰 : Plain Text
 		else if(tokenList.get(0) instanceof T_plainText)
 		{
-			//TextNode 생성
-			N_TextNode textnode = new N_TextNode();
-			String text = new String();
-			//단어단위로 연결된 토큰들을 한개의 문자열로 합침
-			int size = tokenList.size();
-			for(int i=0;i<size;i++){
-				text = text.concat(tokenList.get(i).getContent()+ " ");
+			int textStart=0;
+			for(int i=0; i<tokenList.size();i++){
+				//문자열의 중간에 링크 토큰이 나오는 경우
+				if(tokenList.get(i) instanceof T_link && !(tokenList.get(i+1) instanceof T_link)){
+					addTextNode(tempNode, nodeList, textStart, i-1);
+					textStart = setLink(tempNode,nodeList,textStart);
+				}
+				else if(tokenList.get(i) instanceof T_image){
+					
+				}
 			}
-			//textnode에 하나로 합친 문자열을 전달
-			textnode.setContent(text);
-			nodeList.add(textnode);
+			
+			//text token 처리 
+			addTextNode(tempNode,nodeList,textStart,tokenList.size());
 		}
 		//첫 토큰 : New Line
 		else if(tokenList.get(0) instanceof T_newLine){
 			N_newLine newLine = new N_newLine();
 			nodeList.add(newLine);
+		}
+		//첫 토큰 : Link
+		else if(tokenList.get(0) instanceof T_link){
+			int textStart=0;
+			if((tokenList.get(1) instanceof T_link)){
+				textStart = setLink(tempNode,nodeList,textStart);
+				for(int i=textStart; i<tokenList.size();i++){
+					if(tokenList.get(i) instanceof T_link){
+						System.out.println("textStart = "+textStart+"i = "+i);
+						addTextNode(tempNode, nodeList, textStart, i);
+						textStart = setLink(tempNode,nodeList,textStart);
+						i = textStart;
+					}
+				}
+				addTextNode(tempNode,nodeList,textStart,tokenList.size());
+			}
+			//[~~] : http://~~~ 이런 형태
+			else if(tokenList.get(1).getContent().charAt(0)==':'){
+				String linkText = ((T_link)tokenList.get(0)).getText();
+				String temp = new String();
+				for(int i=2;i<tokenList.size();i++)
+					temp = temp.concat(tokenList.get(i).getContent());
+				String [] split;
+				split = temp.split("[()\"\']");
+				String[] val = new String[2];
+				val[0] = split[0];
+				if(split.length<2)
+					val[1] = "";
+				else
+					val[1] = split[1];
+				
+				urlList.put(linkText, val);
+				
+			}
 		}
 		else{
 			System.out.println("다른 토큰는 아직 구현 안됨");
@@ -110,6 +176,19 @@ public class MDParser {
 	
 	
 //==========header: 토큰리스트랑 노드리스트 받아서 삽입하기===================
+	public void addTextNode(Node tempNode, LinkedList<Node> nodeList, int start, int end){
+		List<Token> tokenList = tempNode.getTokenList();
+		String text = new String();	
+		
+		//Text token의 범위 안에서 한개의 String으로 합침
+		for(int i=start;i<end;i++)
+			text = text.concat(tokenList.get(i).getContent()+ " ");
+		
+		nodeList.add(new N_TextNode(text));
+	}
+
+	
+	
 	public boolean header(Node tempNode, LinkedList<Node> nodeList){
 		//----------------------------------- Header Node -------------------------------------------
 		List<Token> tokenList = tempNode.getTokenList();
@@ -174,8 +253,6 @@ public class MDParser {
 	}
 	
 	
-	
-	
 	public boolean blockquote(Node newNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = newNode.getTokenList();
 		Node lastNode;
@@ -207,6 +284,8 @@ public class MDParser {
 					}else{
 						tokenList.remove(0);
 						Node node = new Node(tokenList);
+						T_plainText token = new T_plainText("<br>");
+						node.getTokenList().add(token);
 						addNodeToList(node, ((N_Blockquote)lastNode).getList());
 						return true;
 					}
@@ -217,7 +296,7 @@ public class MDParser {
 			//Nested BQ 아닌 경우
 			else
 			{
-				
+				// 문서의 처음이 BQ거나   || BQ가 새로 등장하는 경우
 				if(nodeList.size()<=0 || ( nodeList.size()>0 && !((lastNode=nodeList.getLast()) instanceof N_Blockquote)))
 				{
 					N_Blockquote bq = new N_Blockquote();
@@ -232,15 +311,18 @@ public class MDParser {
 						return true;
 					}
 				}
-				//리스트의 마지막 노드가 BQ였다
+				//마지막 노드가 BQ였던 경우
 				else if(nodeList.size()>0 && ((lastNode=nodeList.getLast()) instanceof N_Blockquote))
 				{
+					//> 만 있는 빈 칸
 					if(tokenList.size()==1){
 						((N_Blockquote)lastNode).addNewParagraph();
 						return true;
 					}else{
 						tokenList.remove(0);
 						Node node = new Node(tokenList);
+						T_plainText token = new T_plainText("<br>");
+						node.getTokenList().add(token);
 						addNodeToList(node, ((N_Blockquote)lastNode).getList());
 						return true;
 					}			
@@ -254,11 +336,65 @@ public class MDParser {
 	}
 					
 					
+	public boolean backslashEsc(char c){
+		if(c=='\\' || c=='\'' || c=='*' || c=='_' || c=='{' || c=='}' || 
+		   c=='[' || c==']' || c=='(' || c==')' || c=='#' || c=='.' || c=='!'){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	
+	public int setLink(Node tempnode, LinkedList<Node> nodeList, int startIndex){
+		List<Token> tokenList = tempnode.getTokenList();
+
+		//Link Token 위치 검색
+		while(!(tokenList.get(startIndex) instanceof T_link)) startIndex++;
+		System.out.println(">> link start: "+startIndex);
+		//[~~~~][~~~] 이렇게 2개가 연달아 있는 경우
+		if(((T_link)tokenList.get(startIndex+1)).getType().equals("text") ){
+			N_Link linkNode = new N_Link(urlList);
+			linkNode.setLinkText(((T_link)tokenList.get(startIndex)).getText());
+			linkNode.setLinkKey(((T_link)tokenList.get(startIndex+1)).getText());
+			nodeList.add(linkNode);
 			
-	
-	
-	
-	
+			//다음 TextToken이 시작하는 위치 리턴
+			return startIndex+2;
+		}
+		//[~~~~](~~~) 이런 경우
+		else if(((T_link)tokenList.get(startIndex+1)).getType().equals("url") ){
+			N_Link linkNode = new N_Link(urlList);
+			linkNode.setLinkText(((T_link)tokenList.get(startIndex)).getText());
+			//[~~~](~~~) 이런 경우, linkText와 linkKey 는 동일
+			linkNode.setLinkKey(((T_link)tokenList.get(startIndex)).getText());
+			nodeList.add(linkNode);
+			
+			//Hashmap에 key, url, title추가
+			String key = linkNode.getLinkKey();
+			String url = ((T_link)tokenList.get(startIndex+1)).getUrl();
+			String title = ((T_link)tokenList.get(startIndex+1)).getTitle();
+			String[] val = new String[2];
+			val[0] = url.toLowerCase(); val[1] = title;
+			urlList.put(key,val);
+			
+			//다음 TextToken이 시작하는 위치 리턴
+			return startIndex+2;
+		}
+		//[~~~][] 이런 경우
+		else if(((T_link)tokenList.get(startIndex+1)).getType().equals("empty")){
+			N_Link linkNode = new N_Link(urlList);
+			linkNode.setLinkText(((T_link)tokenList.get(startIndex)).getText());
+			linkNode.setLinkKey(((T_link)tokenList.get(startIndex)).getText().toLowerCase());
+			nodeList.add(linkNode);
+			//다음 TextToken이 시작하는 위치 리턴
+			return startIndex+2;
+		}
+		else
+			return -1;
+		
+	}
 	
 	
 	

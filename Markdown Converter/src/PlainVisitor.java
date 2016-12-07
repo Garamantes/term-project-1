@@ -1,8 +1,9 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class PlainVisitor implements MDElementVisitor{
 	public String startHtml(){
-		String str="<!DOCTYPE html>\n<html>\n<body>\n";
+		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n";
 		return str;
 	}
 	
@@ -16,17 +17,17 @@ public class PlainVisitor implements MDElementVisitor{
 		int level = header.getLevel();
 		String text = header.getText();
 		String str = "<h"+level+">"+text+"</h"+level+">";
-		return str;
+		return str+"\n";
 	}
 
 	@Override
 	public String visit(N_TextNode textnode) {
 		String str = textnode.getContent();
-		return str;
+		return str+"\n";
 	}
 	
 	public String visit(N_newLine newLine){
-		return "\n";
+		return "<br>\n";
 	}
 
 
@@ -34,7 +35,7 @@ public class PlainVisitor implements MDElementVisitor{
 	public String visit(N_Blockquote blockquote){
 		LinkedList<Node> list = blockquote.getList();
 		String str = new String();
-		str = str.concat("<blockquote>");
+		str = str.concat("<blockquote>\n");
 	
 		for(int i=0;i<list.size();i++){
 	
@@ -51,6 +52,27 @@ public class PlainVisitor implements MDElementVisitor{
 		}
 		
 		str = str.concat("</blockquote>");
+		return str;
+	}
+
+	@Override
+	public String visit(N_Link link) {
+		String str = new String();
+		
+		if(link.urlList.get(link.getLinkKey()) != null){
+			str = "<a href=\""
+					+link.urlList.get(link.getLinkKey())[0]
+					+"\" title = \""
+					+link.urlList.get(link.getLinkKey())[1]
+					+ "\">"
+					+link.getLinkText()
+					+"</a>"+"\n";
+		}
+		else{
+			str = "["+link.getLinkText()+"] ["+link.getLinkKey()+"] ";
+		}
+		
+		
 		return str;
 	}
 	

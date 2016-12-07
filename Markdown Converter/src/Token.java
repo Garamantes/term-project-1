@@ -5,6 +5,7 @@
 
 public class Token {
 	private String content;
+	
 	public void setContent(String str){
 		this.content = str;
 	}

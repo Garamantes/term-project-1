@@ -8,6 +8,11 @@
 public class N_TextNode extends Node{
 	private String text;
 	
+	public N_TextNode(){}
+	public N_TextNode(String str){
+		setContent(str);
+	}
+	
 	public void setContent(String text){
 		this.text = text;
 	}
