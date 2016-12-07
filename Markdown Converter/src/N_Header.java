@@ -4,7 +4,7 @@
  * 둘 다 변수는 private로 선언하고 setter/getter로 정보를 처리
  * setLevel의 경우 "###" 이런걸 받거나, 숫자를 받거나 할 수 있도록 함.
  */
-public class Header extends Node{
+public class N_Header extends Node{
 	private int level;
 	private String text;
 	
