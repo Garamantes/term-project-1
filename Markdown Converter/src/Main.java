@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-//import org.w3c.tidy.Tidy;
-//import org.w3c.tidy.TidyUtils;
+import org.w3c.tidy.Tidy;
+import org.w3c.tidy.TidyUtils;
 
 public class Main {
 	public static void main(String[] args) {
@@ -18,8 +18,15 @@ public class Main {
 		MDParser mdParser = new MDParser();
 		
 		//파일 읽기/쓰기 준비
-		File fin = new File(args[1]);
-		File fout = new File(args[3]);
+		//이클립스용
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//CMD 용
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
+
+		String filepath = upOne.getAbsolutePath();
+		
+		File fin = new File(filepath+"\\src\\"+inputFile.get(0));
+		File fout = new File(filepath+"\\src\\"+outputFile.get(0));
 		FileReader fr = null;
 		FileWriter fw = null;
 		BufferedReader in = null;
@@ -35,22 +42,28 @@ public class Main {
 			
 			//.md파일에서 temp로 한줄씩 읽어서 그 문자열을 처리
 			while((temp = in.readLine()) != null){
+				//System.out.println(temp);
 				Node tempNode = new Node();
 				tempNode.setToken(mdParser.tokenize(temp));
 				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
-			
+			/*
 			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				mdParser.nodeList.get(i).printNodeInfo();
 			}
+			//*/
 
+			System.out.println("-------------------------------------");
+			
 			//Visitor 패턴으로 plain 스타일 html 적용
 			PlainVisitor plainvisitor = new PlainVisitor();
 			out.write(plainvisitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
-				System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
+				//System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
+				if(i>0 && mdParser.nodeList.get(i) instanceof N_TextNode && mdParser.nodeList.get(i-1) instanceof N_TextNode)
+					out.write("<br>");
 				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
 			}
 			out.write(plainvisitor.endHtml());
@@ -65,8 +78,8 @@ public class Main {
 	
 		
 		//JTidy 로 html 검사
-		//HtmlValidator jtidy = new HtmlValidator();
-		//jtidy.checkHtml(outputFile.get(0));
+		/*HtmlValidator jtidy = new HtmlValidator();
+		jtidy.checkHtml(outputFile.get(0));*/
 		
 		
 		
@@ -96,7 +109,7 @@ public class Main {
 		int input_count = 0;
 		int output_count = 0;
 
-		
+			
 		
 		if(args.length == 0){
 			System.out.println("No argument");
@@ -157,11 +170,17 @@ public class Main {
 		if(checkExtension(inputFile, "in")==false || checkExtension(outputFile, "out") == false)
 			System.exit(0);
 		
-		
-		
+		//파일 읽기/쓰기 준비
+		//이클립스용
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//CMD 용
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
+
+		String filepath = upOne.getAbsolutePath();
+
 		//Input파일 존재여부 확인
 		for(int i=0;i<inputFile.size();i++){
-			File file = new File(inputFile.get(i));
+			File file = new File(filepath+"\\src\\"+inputFile.get(0));
 			if(file.exists()==false){
 				System.out.println("No input file. Check file name");
 				System.exit(0);
@@ -170,7 +189,7 @@ public class Main {
 		
 		//Output파일 확인
 		for(int i=0;i<outputFile.size();i++){
-			File file = new File(outputFile.get(i));
+			File file = new File(filepath+"\\src\\"+outputFile.get(0));
 			if(file.isFile() == true){
 				System.out.println("There already exists file: "+outputFile.get(i));
 				System.out.print("Overwrite? (y/n)");

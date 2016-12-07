@@ -24,9 +24,9 @@ public class N_Blockquote extends Node{
 	}
 	
 	public void addNewParagraph(){
-		addToList("</p>\n<p>");
+		addToList("<p></p>");
 	}
-	
+
 	public int getListSize(){
 		return this.list.size();
 	}
