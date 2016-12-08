@@ -27,6 +27,15 @@ public class PlainVisitor implements MDElementVisitor{
 		
 		return "<hr>";
 	}
+	
+	@Override
+	public String visit(N_emphasis em){
+		
+		String text = em.getText();
+		String str = "<em>"+text+"</em> ";
+		return str;
+		
+	}
 
 	@Override
 	public String visit(N_TextNode textnode) {
@@ -35,7 +44,7 @@ public class PlainVisitor implements MDElementVisitor{
 	}
 	
 	public String visit(N_newLine newLine){
-		return "<br>\n";
+		return "<br>";
 	}
 	
 	

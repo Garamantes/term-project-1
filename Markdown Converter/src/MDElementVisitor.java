@@ -6,4 +6,5 @@ public interface MDElementVisitor {
 	public String visit(N_newLine newLine);
 	public String visit(N_Link link);
 	public String visit(N_Hr hr);
+	public String visit(N_emphasis em);
 }
