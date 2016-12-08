@@ -2,7 +2,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 
-
 public class PlainVisitor implements MDElementVisitor{
 	public String startHtml(){
 		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n";
@@ -21,6 +20,12 @@ public class PlainVisitor implements MDElementVisitor{
 		String str = "<h"+level+">"+text+"</h"+level+">";
 		return str+"\n";
 	}
+
+	@Override
+	public String visit(N_TextNode textnode) {
+		String str = textnode.getContent();
+		return str+"\n";
+	}	
 	
 	@Override
 	public String visit(N_Hr hr){
@@ -36,18 +41,10 @@ public class PlainVisitor implements MDElementVisitor{
 		return str;
 		
 	}
-
-	@Override
-	public String visit(N_TextNode textnode) {
-		String str = textnode.getContent();
-		return str+"\n";
-	}
 	
 	public String visit(N_newLine newLine){
-		return "<br>";
+		return "<br>\n";
 	}
-	
-	
 
 
 

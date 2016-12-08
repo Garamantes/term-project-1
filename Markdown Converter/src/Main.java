@@ -48,11 +48,11 @@ public class Main {
 				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
-			/*
+			///*
 			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
-			for(int i=0;i<mdParser.nodeList.size();i++){
+			/*for(int i=0;i<mdParser.nodeList.size();i++){
 				mdParser.nodeList.get(i).printNodeInfo();
-			}
+			}*/
 			//*/
 
 			System.out.println("-------------------------------------");
@@ -78,8 +78,8 @@ public class Main {
 	
 		
 		//JTidy 로 html 검사
-		/*HtmlValidator jtidy = new HtmlValidator();
-		jtidy.checkHtml(outputFile.get(0));*/
+		//HtmlValidator jtidy = new HtmlValidator();
+		//jtidy.checkHtml(outputFile.get(0));
 		
 		
 		

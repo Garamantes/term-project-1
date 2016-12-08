@@ -104,7 +104,7 @@ public class MDParser {
 				return;
 			}
 				
-		}
+			}
 		//첫 토큰 : Plain Text
 		else if(tokenList.get(0) instanceof T_plainText)
 		{
@@ -118,7 +118,7 @@ public class MDParser {
 				else if(tokenList.get(i) instanceof T_image){
 					
 				}//중간에 em이 올 경우
-				else if(tokenList.get(i) instanceof T_emphasis){/****************************************************************************************************/
+				else if(tokenList.get(i) instanceof T_emphasis){
 					
 					String text = tokenList.get(i-1).getContent();
 					if(text!="\n")
@@ -179,7 +179,7 @@ public class MDParser {
 			}
 		}
 		//첫 토큰 : em
-		else if(tokenList.get(0) instanceof T_emphasis){/**************************************************************************************************/
+		else if(tokenList.get(0) instanceof T_emphasis){
 			//em(tempNode,nodeList);
 			N_emphasis em =new N_emphasis();
 			String text ="";
@@ -187,15 +187,12 @@ public class MDParser {
 			emSymbol=tokenList.get(0).getContent().replaceAll("\\*", "");
 			em.setText(emSymbol);
 			nodeList.add(em);
-			
 			for(int i=0; i<tokenList.size()-1;i++){
-				//String text = tokenList.get(i+1).getContent();
-				
 				text =text.concat(tokenList.get(i+1).getContent()+ " ");
 			}
 			nodeList.add(new N_TextNode(text));
-			
 		}
+		
 		else{
 			System.out.println("다른 토큰는 아직 구현 안됨");
 		}
@@ -207,7 +204,7 @@ public class MDParser {
 	
 //==========================================================================//
 //==========================================================================//
-//							노드별 메소드									//
+//							노드별 메소드										//
 //==========================================================================//
 //==========================================================================//
 	
@@ -219,11 +216,9 @@ public class MDParser {
 		String text = new String();	
 		
 		//Text token의 범위 안에서 한개의 String으로 합침
-		for(int i=start;i<end;i++){
+		for(int i=start;i<end;i++)
 			text = text.concat(tokenList.get(i).getContent()+ " ");
-			//System.out.println("text node contetnt : " + tokenList.get(i).getContent());
-		}
-			
+		
 		nodeList.add(new N_TextNode(text));
 	}
 
@@ -292,6 +287,7 @@ public class MDParser {
 			return false;
 	}
 	
+	//em함수
 	public boolean em(Node newNode, LinkedList<Node> nodeList){/************************************************************************************************/
 		List<Token> tokenList = newNode.getTokenList();
 		N_emphasis em =new N_emphasis();
@@ -301,11 +297,8 @@ public class MDParser {
 		em.setText(text);
 		nodeList.add(em);
 		
-		//em.addNewParagraph();
 		return true;
 	}
-	
-
 	
 	public boolean hr(Node newNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = newNode.getTokenList();
@@ -325,7 +318,7 @@ public class MDParser {
 			return true;
 		}
 		else{
-			System.out.println("hr아님");
+			//System.out.println("hr아님");
 			return false;
 		}
 	}
