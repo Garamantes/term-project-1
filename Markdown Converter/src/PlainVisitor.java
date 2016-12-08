@@ -1,6 +1,10 @@
 import java.util.HashMap;
 import java.util.LinkedList;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> garamantes_branch
 public class PlainVisitor implements MDElementVisitor{
 	public String startHtml(){
 		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta content=\"text/html; charset=UTF-8\">\n</head>\n<body>\n";
@@ -25,11 +29,79 @@ public class PlainVisitor implements MDElementVisitor{
 	public String visit(N_TextNode textnode) {
 		String str = textnode.getContent();
 		return str+"\n";
+<<<<<<< HEAD
 	}
 	
 	public String visit(N_newLine newLine){
 		return "<br>\n";
 	}
+
+
+
+	public String visit(N_Blockquote blockquote){
+		LinkedList<Node> list = blockquote.getList();
+		String str = new String();
+		str = str.concat("<blockquote>\n");
+	
+		for(int i=0;i<list.size();i++){
+	
+			if(list.get(i) instanceof N_TextNode){
+				str = str.concat(visit((N_TextNode)list.get(i)));
+			}else if(list.get(i) instanceof N_Header){
+				str = str.concat(visit((N_Header)list.get(i)));
+			}else if(list.get(i) instanceof N_newLine){
+				str = str.concat(visit((N_newLine)list.get(i)));
+			}else if(list.get(i) instanceof N_Blockquote){
+				str = str.concat(visit((N_Blockquote)list.get(i)));
+			}else{}
+
+		}
+		
+		str = str.concat("</blockquote>");
+		return str;
+	}
+
+	@Override
+	public String visit(N_Link link) {
+		String str = new String();
+		
+		if(link.urlList.get(link.getLinkKey()) != null){
+			str = "<a href=\""
+					+link.urlList.get(link.getLinkKey())[0]
+					+"\" title = \""
+					+link.urlList.get(link.getLinkKey())[1]
+					+ "\">"
+					+link.getLinkText()
+					+"</a>"+"\n";
+		}
+		else{
+			str = "["+link.getLinkText()+"] ["+link.getLinkKey()+"] ";
+		}
+		
+		
+=======
+	}	
+	
+	@Override
+	public String visit(N_Hr hr){
+		
+		return "<hr>";
+	}
+	
+	@Override
+	public String visit(N_emphasis em){
+		
+		String text = em.getText();
+		String str = "<em>"+text+"</em> ";
+>>>>>>> garamantes_branch
+		return str;
+		
+	}
+	
+	public String visit(N_newLine newLine){
+		return "<br>\n";
+	}
+	
 
 
 

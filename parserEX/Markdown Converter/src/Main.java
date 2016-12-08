@@ -7,26 +7,19 @@ import org.w3c.tidy.TidyUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		String option = new String();	//option º¯¼ö (Plain, Fancy, Slide µî)
-		ArrayList<String> inputFile = new ArrayList<String>();		//.md ÆÄÀÏÀÌ¸§ ¸®½ºÆ®
-		ArrayList<String> outputFile = new ArrayList<String>();		//.html ÆÄÀÏÀÌ¸§ ¸®½ºÆ®
+		String option = new String();	//option ï¿½ï¿½ï¿½ï¿½ (Plain, Fancy, Slide ï¿½ï¿½)
+		ArrayList<String> inputFile = new ArrayList<String>();		//.md ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
+		ArrayList<String> outputFile = new ArrayList<String>();		//.html ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®
 		
-		//Command Line ÀÔ·Â ¿À·ù È®ÀÎ
+		//Command Line ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 		checkCLI(args, inputFile, outputFile, option);
 		
-		//Parser °´Ã¼ »ý¼º
+		//Parser ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½
 		MDParser mdParser = new MDParser();
 		
-		//ÆÄÀÏ ÀÐ±â/¾²±â ÁØºñ
-		//ÀÌÅ¬¸³½º¿ë
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD ¿ë
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
-
-		String filepath = upOne.getAbsolutePath();
-		
-		File fin = new File(filepath+"\\src\\"+inputFile.get(0));
-		File fout = new File(filepath+"\\src\\"+outputFile.get(0));
+		//ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½Øºï¿½
+		File fin = new File("src/"+inputFile.get(0));
+		File fout = new File("src/"+outputFile.get(0));
 		FileReader fr = null;
 		FileWriter fw = null;
 		BufferedReader in = null;
@@ -40,41 +33,29 @@ public class Main {
 			
 			String temp=new String();
 			
-			//.mdÆÄÀÏ¿¡¼­ temp·Î ÇÑÁÙ¾¿ ÀÐ¾î¼­ ±× ¹®ÀÚ¿­À» Ã³¸®
+			//.mdï¿½ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ tempï¿½ï¿½ ï¿½ï¿½ï¿½Ù¾ï¿½ ï¿½Ð¾î¼­ ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½
 			while((temp = in.readLine()) != null){
-				//System.out.println(temp);
 				Node tempNode = new Node();
 				tempNode.setToken(mdParser.tokenize(temp));
 				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
 			
-			///*
-			//¾î¶² ³ëµåµéÀÌ ÀÖ´ÂÁö È®ÀÎ¿ë. ÃÖÁ¾º»¿£ ÀÖÀ» ÇÊ¿ä ¾øÀ½.
-<<<<<<< HEAD
+			
+			//ï¿½î¶² ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½Î¿ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½ï¿½.
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				mdParser.nodeList.get(i).printNodeInfo();
 			}
-=======
-			/*for(int i=0;i<mdParser.nodeList.size();i++){
-				mdParser.nodeList.get(i).printNodeInfo();
-			}*/
->>>>>>> garamantes_branch
-			//*/
 
-			System.out.println("-------------------------------------");
-			
-			//Visitor ÆÐÅÏÀ¸·Î plain ½ºÅ¸ÀÏ html Àû¿ë
+			//Visitor ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ plain ï¿½ï¿½Å¸ï¿½ï¿½ html ï¿½ï¿½ï¿½ï¿½
 			PlainVisitor plainvisitor = new PlainVisitor();
 			out.write(plainvisitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
-				//System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
-				if(i>0 && mdParser.nodeList.get(i) instanceof N_TextNode && mdParser.nodeList.get(i-1) instanceof N_TextNode)
-					out.write("<br>");
+				System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
 				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
 			}
 			out.write(plainvisitor.endHtml());
 			
-			//ÆÄÀÏ´Ý±â
+			//ï¿½ï¿½ï¿½Ï´Ý±ï¿½
 			in.close();
 			out.close();
 			fr.close();
@@ -83,21 +64,16 @@ public class Main {
 		} catch (IOException e) {e.printStackTrace();}
 	
 		
-		//JTidy ·Î html °Ë»ç
-<<<<<<< HEAD
+		//JTidy ï¿½ï¿½ html ï¿½Ë»ï¿½
 		HtmlValidator jtidy = new HtmlValidator();
 		jtidy.checkHtml(outputFile.get(0));
-=======
-		//HtmlValidator jtidy = new HtmlValidator();
-		//jtidy.checkHtml(outputFile.get(0));
->>>>>>> garamantes_branch
 		
 		
 		
 	}
 
 
-	//========= -help ÀÔ·Â ½Ã Ãâ·Â =================
+	//========= -help ï¿½Ô·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ =================
 	public static void printHelp(){
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
@@ -112,7 +88,7 @@ public class Main {
 		System.out.println("----------------------------------------------------------------");
 	}
 
-	//CLI ÀÔ·Â È®ÀÎ
+	//CLI ï¿½Ô·ï¿½ È®ï¿½ï¿½
 	public static void checkCLI(String[] args, ArrayList<String> inputFile, ArrayList<String> outputFile, String option){
 		int index_input = -1;
 		int index_output = -1;
@@ -120,16 +96,16 @@ public class Main {
 		int input_count = 0;
 		int output_count = 0;
 
-			
+		
 		
 		if(args.length == 0){
 			System.out.println("No argument");
 			System.exit(0);
 		}		
-		//1. args0 ÀÌ help => help page ¶ç¿ò
+		//1. args0 ï¿½ï¿½ help => help page ï¿½ï¿½ï¿½
 		else if(args[0].equals("-help") || args[0].equals("-HELP"))
 			printHelp();
-		//2. help°¡ ¾Æ´Ï¶ó¸é, input, output, optionÀÇ À§Ä¡ ±â¾ï
+		//2. helpï¿½ï¿½ ï¿½Æ´Ï¶ï¿½ï¿½, input, output, optionï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½
 		else{
 			int i=0;
 			while(i<args.length){
@@ -141,14 +117,14 @@ public class Main {
 					index_output = i;
 				i++;
 			}
-			//input, outputÀ» ¾È½è°Å³ª input, output, option ¼ø¼­¸¦ Æ²¸° °æ¿ì
+			//input, outputï¿½ï¿½ ï¿½È½ï¿½Å³ï¿½ input, output, option ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ²ï¿½ï¿½ ï¿½ï¿½ï¿½
 			if(index_input == -1 || index_output == -1 ||
 				index_input>index_output || index_option>index_output ||
 				index_output - index_input == 1){
 				System.out.println("Wrong command. Check -help for commnad line syntax");
 				System.exit(0);
 			}
-			//input°ú output ÆÄÀÏÀÇ °³¼ö È®ÀÎ
+			//inputï¿½ï¿½ output ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 			input_count = index_output - index_input;
 			if(index_option != -1)
 				output_count = index_option - index_output;
@@ -160,7 +136,7 @@ public class Main {
 				System.exit(0);
 			}
 			
-			//option º¯¼ö¿¡ option°ª Àü´Þ
+			//option ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ optionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			if(index_option	== -1)
 				option = "plain";
 			else if(!args[index_option+1].equals("plain") ||!args[index_option+1].equals("fancy") ||!args[index_option+1].equals("slide")){
@@ -169,7 +145,7 @@ public class Main {
 			}else
 				option = args[index_option+1];
 
-			//inputFile¸®½ºÆ®¿¡ input ÆÄÀÏÀÌ¸§ ÀúÀå, outputFile¸®½ºÆ®¿¡ output ÆÄÀÏÀÌ¸§ ÀúÀå
+			//inputFileï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ input ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½, outputFileï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ output ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 			for(int k=1;k<index_output-index_input;k++){
 				inputFile.add(args[index_input+k]);
 				outputFile.add(args[index_output+k]);
@@ -177,52 +153,33 @@ public class Main {
 		}
 		
 		
-		//È®ÀåÀÚ È®ÀÎ
+		//È®ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 		if(checkExtension(inputFile, "in")==false || checkExtension(outputFile, "out") == false)
 			System.exit(0);
 		
-		//ÆÄÀÏ ÀÐ±â/¾²±â ÁØºñ
-		//ÀÌÅ¬¸³½º¿ë
-<<<<<<< HEAD
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD ¿ë
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
-=======
-<<<<<<< HEAD
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD ¿ë
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
-=======
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD ¿ë
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
->>>>>>> garamantes_branch
->>>>>>> refs/remotes/origin/master
-
-		String filepath = upOne.getAbsolutePath();
-
-		//InputÆÄÀÏ Á¸Àç¿©ºÎ È®ÀÎ
+		
+		
+		//Inputï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ç¿©ï¿½ï¿½ È®ï¿½ï¿½
 		for(int i=0;i<inputFile.size();i++){
-			File file = new File(filepath+"\\src\\"+inputFile.get(0));
+			File file = new File("src/"+inputFile.get(i));
 			if(file.exists()==false){
 				System.out.println("No input file. Check file name");
 				System.exit(0);
 			}
 		}
 		
-		//OutputÆÄÀÏ È®ÀÎ
+		//Outputï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 		for(int i=0;i<outputFile.size();i++){
-			File file = new File(filepath+"\\src\\"+outputFile.get(0));
+			File file = new File("src/"+outputFile.get(i));
 			if(file.isFile() == true){
 				System.out.println("There already exists file: "+outputFile.get(i));
-				System.out.println("This will be overwrited");
-				//System.out.print("Overwrite? (y/n)");
+				System.out.print("Overwrite? (y/n)");
 				InputStreamReader ir = new InputStreamReader(System.in);
 				BufferedReader br = new BufferedReader(ir);
 				String newFile;
 				char yn;
 				try {
-					yn = 'y'; System.out.println();	//Overwrite ¹°¾îº¼²¨¸é ÀÌ°Å Áö¿ì°í ¾Æ·¡²¨ »ì¸®±â
+					yn = 'y'; System.out.println();//ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½.
 					//yn = br.readLine().charAt(0);
 					if(yn == 'n' || yn == 'N'){
 						while(true){
@@ -247,7 +204,7 @@ public class Main {
 	}
 	
 	
-	//.md, .html È®ÀåÀÚ È®ÀÎÇÏ´Â ¸Þ¼Òµå
+	//.md, .html È®ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½
 	public static boolean checkExtension(ArrayList<String> list, String type){
 		for(int i=0;i<list.size();i++){
 			if(type.equals("in") && list.get(i).endsWith(".md")==false){
