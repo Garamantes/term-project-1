@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.regex.*;
 
 import org.omg.Messaging.SyncScopeHelper;
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> garamantes_branch
 public class MDParser {
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	List<Token> tokenList = new LinkedList<Token>();
@@ -98,6 +103,11 @@ public class MDParser {
 			//if blockquote
 			else if(blockquote(tempNode, nodeList) == true){
 				return;
+<<<<<<< HEAD
+=======
+			}else if(hr(tempNode,nodeList) == true){
+				return;
+>>>>>>> garamantes_branch
 			}
 				
 			}
@@ -113,6 +123,25 @@ public class MDParser {
 				}
 				else if(tokenList.get(i) instanceof T_image){
 					
+<<<<<<< HEAD
+=======
+				}//중간에 em이 올 경우
+				else if(tokenList.get(i) instanceof T_emphasis){
+					
+					String text = tokenList.get(i-1).getContent();
+					if(text!="\n")
+					{
+						nodeList.add(new N_TextNode(text));
+					}
+					
+					N_emphasis em =new N_emphasis();
+					
+					String emSymbol;
+					emSymbol=tokenList.get(i).getContent().replaceAll("\\*", "");
+					em.setText(emSymbol);
+					nodeList.add(em);
+					textStart = i+1;
+>>>>>>> garamantes_branch
 				}
 			}
 			
@@ -156,8 +185,29 @@ public class MDParser {
 				
 				urlList.put(linkText, val);
 				
+<<<<<<< HEAD
+=======
 			}
 		}
+		//첫 토큰 : em
+		else if(tokenList.get(0) instanceof T_emphasis){
+			//em(tempNode,nodeList);
+			N_emphasis em =new N_emphasis();
+			String text ="";
+			String emSymbol;
+			emSymbol=tokenList.get(0).getContent().replaceAll("\\*", "");
+			em.setText(emSymbol);
+			nodeList.add(em);
+			for(int i=0; i<tokenList.size()-1;i++){
+				text =text.concat(tokenList.get(i+1).getContent()+ " ");
+>>>>>>> garamantes_branch
+			}
+			nodeList.add(new N_TextNode(text));
+		}
+<<<<<<< HEAD
+=======
+		
+>>>>>>> garamantes_branch
 		else{
 			System.out.println("다른 토큰는 아직 구현 안됨");
 		}
@@ -217,6 +267,7 @@ public class MDParser {
 			//노드 리스트에 지금 만든 헤더 노드 삽입
 			nodeList.add(header);
 			return true;
+<<<<<<< HEAD
 		}
 		//토큰에 '=' 종류만 있고 뒤에는 아무것도 없는 경우
 		else if(tokenList.get(0).getContent().charAt(0)=='=' && tokenList.size()==1){
@@ -253,6 +304,79 @@ public class MDParser {
 	}
 	
 	
+=======
+		}
+		//토큰에 '=' 종류만 있고 뒤에는 아무것도 없는 경우
+		else if(tokenList.get(0).getContent().charAt(0)=='=' && tokenList.size()==1){
+			if(nodeList.getLast() instanceof N_TextNode){	// '='나오기 직전 노드가 텍스트노드인지 확인
+				//헤더 노드 생성
+				N_Header header = new N_Header();
+				//1. 레벨 설정. (= 계통은 1)
+				header.setLevel(1);
+				//2. 텍스트 설정 (직전 노드에서 텍스트를 가져와서 그걸 사용)
+				header.setText(((N_TextNode)nodeList.getLast()).getContent());
+				//이제 직전노드(텍스트만 있는)는 필요없으니까 지우고 노드리스트에 헤더노드 삽입
+				nodeList.removeLast();
+				nodeList.add(header);
+				return true;
+			}else{System.out.println("md syntax error"); return false; }
+		}
+		//토큰에 '-' 종류만 있고 뒤에는 아무것도 없는 경우
+		else if(tokenList.get(0).getContent().charAt(0)=='-' && tokenList.size()==1){
+			if(nodeList.getLast() instanceof N_TextNode){	// '-'나오기 직전 노드가 텍스트노드인지 확인
+				//헤더 노드 생성
+				N_Header header = new N_Header();
+				//1. 레벨 설정. (= 계통은 1)
+				header.setLevel(2);
+				//2. 텍스트 설정 (직전 노드에서 텍스트를 가져와서 그걸 사용)
+				header.setText(((N_TextNode)nodeList.getLast()).getContent());
+				//이제 직전노드(텍스트만 있는)는 필요없으니까 지우고 노드리스트에 헤더노드 삽입
+				nodeList.removeLast();
+				nodeList.add(header);
+				return true;
+			}else{System.out.println("md syntax error"); return false;}
+		}
+		else //code shouldn't reach here
+			return false;
+	}
+	
+	//em함수
+	public boolean em(Node newNode, LinkedList<Node> nodeList){/************************************************************************************************/
+		List<Token> tokenList = newNode.getTokenList();
+		N_emphasis em =new N_emphasis();
+		String text = "";
+		
+		text=tokenList.get(0).getContent().replaceAll("\\*", "");
+		em.setText(text);
+		nodeList.add(em);
+		
+		return true;
+	}
+	
+	public boolean hr(Node newNode, LinkedList<Node> nodeList){
+		List<Token> tokenList = newNode.getTokenList();
+		if(tokenList.get(0).getContent().contains("***")||
+				tokenList.get(0).getContent().contains("---")/*||
+				tokenList.get(0).getContent().contains("* * *")||
+				tokenList.get(0).getContent().contains("- - -")*/||
+				tokenList.get(0).getContent().contains("** *")||
+				tokenList.get(0).getContent().contains("* **")||
+				tokenList.get(0).getContent().contains("-- -")||
+				tokenList.get(0).getContent().contains("- --")){
+			//last nodelist를 바라봐야한다
+			N_Hr hr = new N_Hr();
+			nodeList.add(hr);
+			hr.addNewParagraph();
+			
+			return true;
+		}
+		else{
+			//System.out.println("hr아님");
+			return false;
+		}
+	}
+	
+>>>>>>> garamantes_branch
 	public boolean blockquote(Node newNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = newNode.getTokenList();
 		Node lastNode;
