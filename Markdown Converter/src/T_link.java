@@ -13,8 +13,14 @@ public class T_link extends Token{
 	private String linkUrl;	// (linkUrl)
 	private String linkTitle="";	// "linkTitle"
 	private String type;		// text, url, empty
+	private boolean isImage = false;
 	
 	public T_link(){}
+	public T_link(String str, boolean image){
+		this.type = "text";
+		this.linkText = str.substring(2, str.length()-1);
+		this.isImage = image;
+	}
 	public T_link(String str){
 		if(str.charAt(0)=='['){
 			if(str.charAt(1)==']')
@@ -40,7 +46,7 @@ public class T_link extends Token{
 	public String getText(){return this.linkText;}
 	public String getUrl(){return this.linkUrl;}
 	public String getTitle(){return this.linkTitle;}
-	
+	public boolean isImage(){return this.isImage;}
 	
 	
 	

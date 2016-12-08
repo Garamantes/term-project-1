@@ -19,9 +19,9 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 		
@@ -50,18 +50,11 @@ public class Main {
 			
 			///*
 			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
-<<<<<<< HEAD
 			for(int i=0;i<mdParser.nodeList.size();i++){
-				mdParser.nodeList.get(i).printNodeInfo();
+			//	mdParser.nodeList.get(i).printNodeInfo();
 			}
-=======
-			/*for(int i=0;i<mdParser.nodeList.size();i++){
-				mdParser.nodeList.get(i).printNodeInfo();
-			}*/
->>>>>>> garamantes_branch
 			//*/
 
-			System.out.println("-------------------------------------");
 			
 			//Visitor 패턴으로 plain 스타일 html 적용
 			PlainVisitor plainvisitor = new PlainVisitor();
@@ -84,13 +77,8 @@ public class Main {
 	
 		
 		//JTidy 로 html 검사
-<<<<<<< HEAD
 		HtmlValidator jtidy = new HtmlValidator();
 		jtidy.checkHtml(outputFile.get(0));
-=======
-		//HtmlValidator jtidy = new HtmlValidator();
-		//jtidy.checkHtml(outputFile.get(0));
->>>>>>> garamantes_branch
 		
 		
 		
@@ -183,15 +171,9 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-<<<<<<< HEAD
 		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
 		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
-=======
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD 용
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
->>>>>>> garamantes_branch
 
 		String filepath = upOne.getAbsolutePath();
 
@@ -209,13 +191,14 @@ public class Main {
 			File file = new File(filepath+"\\src\\"+outputFile.get(0));
 			if(file.isFile() == true){
 				System.out.println("There already exists file: "+outputFile.get(i));
-				System.out.print("Overwrite? (y/n)");
+				System.out.println("This will be overwrited");
+				//System.out.print("Overwrite? (y/n)");
 				InputStreamReader ir = new InputStreamReader(System.in);
 				BufferedReader br = new BufferedReader(ir);
 				String newFile;
 				char yn;
 				try {
-					yn = 'y'; System.out.println();//이 줄 나중에 지우기.
+					yn = 'y'; System.out.println();	//Overwrite 물어볼꺼면 이거 지우고 아래꺼 살리기
 					//yn = br.readLine().charAt(0);
 					if(yn == 'n' || yn == 'N'){
 						while(true){
