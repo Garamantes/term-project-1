@@ -172,9 +172,9 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 
@@ -192,13 +192,14 @@ public class Main {
 			File file = new File(filepath+"\\src\\"+outputFile.get(0));
 			if(file.isFile() == true){
 				System.out.println("There already exists file: "+outputFile.get(i));
-				System.out.print("Overwrite? (y/n)");
+				System.out.println("This will be overwrited");
+				//System.out.print("Overwrite? (y/n)");
 				InputStreamReader ir = new InputStreamReader(System.in);
 				BufferedReader br = new BufferedReader(ir);
 				String newFile;
 				char yn;
 				try {
-					yn = 'y'; System.out.println();//이 줄 나중에 지우기.
+					yn = 'y'; System.out.println();	//Overwrite 물어볼꺼면 이거 지우고 아래꺼 살리기
 					//yn = br.readLine().charAt(0);
 					if(yn == 'n' || yn == 'N'){
 						while(true){

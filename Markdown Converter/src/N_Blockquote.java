@@ -6,8 +6,7 @@ public class N_Blockquote extends Node{
 
 	
 	public void addToList(String text){
-		N_TextNode textnode = new N_TextNode();
-		textnode.setContent(text);
+		N_TextNode textnode = new N_TextNode(text);
 		this.list.add(textnode);
 	}
 	

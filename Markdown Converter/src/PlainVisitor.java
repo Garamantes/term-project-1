@@ -3,9 +3,10 @@ import java.util.LinkedList;
 
 public class PlainVisitor implements MDElementVisitor{
 	public String startHtml(){
-		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n</head>\n<body>\n";
+		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta content=\"text/html; charset=UTF-8\">\n</head>\n<body>\n";
 		return str;
 	}
+	
 	
 	public String endHtml(){
 		String str="\n</body>\n</html>";
@@ -58,8 +59,17 @@ public class PlainVisitor implements MDElementVisitor{
 	@Override
 	public String visit(N_Link link) {
 		String str = new String();
-		
-		if(link.urlList.get(link.getLinkKey()) != null){
+		System.out.println(">> gim "+link.getImage());
+		if(link.getImage() && link.urlList.get(link.getLinkKey()) != null){
+			str = "<img src=\""
+					+link.urlList.get(link.getLinkKey())[0]
+					+"\" title = \""
+					+link.urlList.get(link.getLinkKey())[1]
+					+"\" alt = \""
+					+link.getLinkText()
+					+ "\"/>\n";
+		}
+		else if(link.urlList.get(link.getLinkKey()) != null){
 			str = "<a href=\""
 					+link.urlList.get(link.getLinkKey())[0]
 					+"\" title = \""
@@ -74,6 +84,47 @@ public class PlainVisitor implements MDElementVisitor{
 		
 		
 		return str;
+	}
+
+	@Override
+	public String visit(N_List list) {
+		
+		String str = new String();
+		if(list.getListType().equals("ul")){
+			str = str.concat("<ul>");
+		}
+		else
+			str = str.concat("<ol>");
+		
+		for(int i=0;i<list.getList().size();i++){
+			str = str.concat("<li>");
+			if(list.getNewLine()==true) str = str.concat("<p>");
+			
+			if(list.getList().get(i) instanceof N_TextNode){
+				str = str.concat(visit((N_TextNode)list.getList().get(i)));
+			}
+			else if(list.getList().get(i) instanceof N_Blockquote){
+				str = str.concat(visit((N_Blockquote)list.getList().get(i)));
+			}
+			else if(list.getList().get(i) instanceof N_List){
+				str = str.concat(visit((N_List)list.getList().get(i)));
+			}
+			if(list.getNewLine()==true) str = str.concat("</p>");
+			str = str.concat("</li>");
+		}
+		
+		if(list.getListType().equals("ul")){
+			str = str.concat("</ul>");
+		}
+		else
+			str = str.concat("</ol>");
+		
+		
+		
+		
+		
+		return str+"\n";
+		
 	}
 	
 
