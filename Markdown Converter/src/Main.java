@@ -94,9 +94,7 @@ public class Main {
 		System.out.println("	you can input several md files");
 		System.out.println("	you can output several html files\n");
 		System.out.println("	But, You must enter the same number of md files and html files \n");
-		System.out.println("	you must input md files to same directory of CLI_mian.class file.");
-		System.out.println("	html files are created to directory of CLI_mian.class file.\n");
-		System.out.println("	this CLI is not support overriding html files");
+		System.out.println("	this CLI default is supporting overriding html files");
 		System.out.println("----------------------------------------------------------------");
 	}
 
