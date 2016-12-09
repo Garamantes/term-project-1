@@ -7,7 +7,7 @@
 1. Go to root directory (Where build.xml is located)
 2. \> ant jar
 
-   This command will compile class files to bin folder
+   This command will compile java files to bin folder
 3. Move to bin folder and run Main class with input commands
 
    ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
