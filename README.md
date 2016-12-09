@@ -8,10 +8,10 @@
 2. \> ant jar
 
    This command will compile java files to bin folder
-3. Move to bin folder and run Main class with input commands
+3. Move to bin folder and run Main class with input commands (jtidy-r938.jar file will be copied to bin folder when building with Ant)
 
    ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
-   (jtidy-r938.jar file will be copied to bin folder when building with Ant)
+   
 4. out.html file will be created in src folder.
 
 -----
