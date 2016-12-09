@@ -1,3 +1,4 @@
+package mdconverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +110,7 @@ public class MDParser {
 				return;
 			}
 			
-			}
+		}
 		//첫 토큰 : Plain Text
 		else if(tokenList.get(0) instanceof T_plainText)
 		{
@@ -193,7 +194,7 @@ public class MDParser {
 			//일단 list에서 \t쓰는 경우
 			for(int i=nodeList.size()-1;i>=0;i--){
 				if(nodeList.get(i) instanceof N_newLine)
-					continue;
+					continue;	
 				
 				if(nodeList.get(i) instanceof N_List){
 					N_List lastNode = (N_List)nodeList.get(i);
@@ -386,17 +387,17 @@ public class MDParser {
 				//마지막 노드가 BQ이고 그 안에서 nest 하는 경우
 				else if(nodeList.size()>0 && ((lastNode=nodeList.getLast()) instanceof N_Blockquote))
 				{
-					if(tokenList.size()==1){
-						((N_Blockquote)lastNode).addNewParagraph();
-						return true;
-					}else{
+					//if(tokenList.size()==1){
+					//	((N_Blockquote)lastNode).addNewParagraph();
+					//	return true;
+					//}else{
 						tokenList.remove(0);
 						Node node = new Node(tokenList);
 						T_plainText token = new T_plainText("<br>");
 						node.getTokenList().add(token);
 						addNodeToList(node, ((N_Blockquote)lastNode).getList());
 						return true;
-					}
+					//}
 				}
 				else
 					return false;
@@ -552,10 +553,10 @@ public class MDParser {
 	
 	
 	
-	public void printAllNode(){
-		for(int i=0;i<nodeList.size();i++)
-			nodeList.get(i).printNodeInfo();
-	}
+//	public void printAllNode(){
+//		for(int i=0;i<nodeList.size();i++)
+//			nodeList.get(i).printNodeInfo();
+//	}
 	
 	
 	public String concatString(List<Token> tokenList, int startIndex){
