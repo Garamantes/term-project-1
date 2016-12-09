@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.w3c.tidy.Tidy;
+/*import org.w3c.tidy.Tidy;
 
 public class HtmlValidator {
 
@@ -21,5 +21,5 @@ public class HtmlValidator {
 		
 		//Code should not reach here
 		return -1;
-	}
+	}*/
 }

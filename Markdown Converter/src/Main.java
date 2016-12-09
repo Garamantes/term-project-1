@@ -2,8 +2,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import org.w3c.tidy.Tidy;
-import org.w3c.tidy.TidyUtils;
+//import org.w3c.tidy.Tidy;
+//import org.w3c.tidy.TidyUtils;
 
 public class Main {
 	public static void main(String[] args) {
@@ -19,14 +19,14 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 		
-		File fin = new File(filepath+"\\src\\"+inputFile.get(0));
-		File fout = new File(filepath+"\\src\\"+outputFile.get(0));
+		File fin = new File(filepath+"/src/"+inputFile.get(0));
+		File fout = new File(filepath+"/src/"+outputFile.get(0));
 		FileReader fr = null;
 		FileWriter fw = null;
 		BufferedReader in = null;
@@ -77,8 +77,8 @@ public class Main {
 	
 		
 		//JTidy 로 html 검사
-		HtmlValidator jtidy = new HtmlValidator();
-		jtidy.checkHtml(outputFile.get(0));
+		//HtmlValidator jtidy = new HtmlValidator();
+		//jtidy.checkHtml(outputFile.get(0));
 		
 		
 		
@@ -171,15 +171,15 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 
 		//Input파일 존재여부 확인
 		for(int i=0;i<inputFile.size();i++){
-			File file = new File(filepath+"\\src\\"+inputFile.get(0));
+			File file = new File(filepath+"/src/"+inputFile.get(0));
 			if(file.exists()==false){
 				System.out.println("No input file. Check file name");
 				System.exit(0);
@@ -188,7 +188,7 @@ public class Main {
 		
 		//Output파일 확인
 		for(int i=0;i<outputFile.size();i++){
-			File file = new File(filepath+"\\src\\"+outputFile.get(0));
+			File file = new File(filepath+"/src/"+outputFile.get(0));
 			if(file.isFile() == true){
 				System.out.println("There already exists file: "+outputFile.get(i));
 				System.out.println("This will be overwrited");
