@@ -7,11 +7,14 @@
     <mkdir dir="${bin.dir}"/>
   </target>
 
-  <target name="compile" depends="clean" description="compile">
+  <target name="compile" depends="copy" description="compile">
     <javac srcdir="${src.dir}" destdir="${bin.dir}" classpath="${lib.dir}" includeantruntime="false">
     </javac>
   </target>
 
+  <target name="copy" depends="clean">
+    <copyfile src="${lib.dir}" dest="${bin.dir}/jtidy-r938.jar" />
+  </target>
 
   <target name="clean" description="clean">
     <delete dir="${bin.dir}"/>

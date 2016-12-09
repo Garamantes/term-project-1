@@ -16,7 +16,7 @@ public class MDParser {
 //=========tokenize: String을 받아서 토큰리스트 리턴==============================
 	public List<Token> tokenize(String str){
 		List<Token> tokenList = new ArrayList<Token>();
-		
+
 		//만약 String 이 \n만 있다면 NewLine 토큰 생성
 		if(str.length()==0){
 			T_newLine token = new T_newLine();
@@ -24,11 +24,11 @@ public class MDParser {
 			tokenList.add(token);
 			return tokenList;
 		}
-		
+
 		//패턴: (PlainText) 이거나 (Symbol) 들을 찾는다
 		Pattern p = Pattern.compile("([0-9*+-]+[ \\.\\t])"				//Group1 : List
 								  + "|(\\'{1}[a-zA-Z0-9 ]+\\'{1})"		//Group2 : Code  '~~~~'
-								  + "|(\\_{1,2}[a-zA-Z0-9 ]+\\_{1,2})"	//Group3 : Emphasis _~~_ or __~~__	
+								  + "|(\\_{1,2}[a-zA-Z0-9 ]+\\_{1,2})"	//Group3 : Emphasis _~~_ or __~~__
 								  + "|(\\*{1,2}[a-zA-Z0-9 ]+\\*{1,2})"	//Group4 : Emphasis *~~* or **~~**
 								  + "|(!\\[[a-zA-Z0-9 ]+\\])"			//Group5 : Image ![~~~~]
 								  + "|(\\[[a-zA-Z0-9 ]+\\])"			//Group6 : Link [~~~~]
@@ -38,7 +38,7 @@ public class MDParser {
 								  +	"|(\\t)"							//Group10 : tab
 								  + "|( {4})");							//Group11 : 4 spaces
 		Matcher matcher = p.matcher(str);
-		
+
 		while(matcher.find()){
 			//i=그룹번호. 1~7까지 중에 맞는 그룹을 매칭해서 토큰을 생성, 추가한다.
 			for (int i = 1; i <= matcher.groupCount(); i++) {
@@ -67,13 +67,13 @@ public class MDParser {
 		    			//ex) '\*' -> *를 plaintext 토큰으로
 		    			if(backslashEsc(matcher.group(i).charAt(1))){
 			    			tokenList.add(new T_plainText(String.valueOf(matcher.group(i).charAt(1))));
-			    			
+
 			    			//혹시 '\**' 이런게 왔으면 '\*'뒤에 있는 다른 symbol은 symbol 토큰으로.
 			    			if(matcher.group(i).length()>2){tokenList.add(new T_symbol(matcher.group(i).substring(2,matcher.group().length())));}
-			    		
+
 			    		//'\' 뒤에 오는 문자가 backslash escape에 해당되는 문자가 아니라면 그냥 text 처리
 		    			}else{tokenList.add(new T_plainText(matcher.group(i)));}
-		    		}	
+		    		}
 					//'<'나 '\' 같은 케이스가 아니라면 그냥 일반 symbol 토큰으로 처리
 		    		else{tokenList.add(new T_symbol(matcher.group(i)));}
 				}
@@ -88,9 +88,9 @@ public class MDParser {
 	}
 //============================================================================
 
-	
-	
-	
+
+
+
 //==========addNodeToList: 노드랑 리스트를 받아서 노드를 리스트에 삽입===================
 	public void addNodeToList(Node tempNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = tempNode.getTokenList();
@@ -109,7 +109,7 @@ public class MDParser {
 			}else if(hr(tempNode,nodeList) == true){
 				return;
 			}
-			
+
 		}
 		//첫 토큰 : Plain Text
 		else if(tokenList.get(0) instanceof T_plainText)
@@ -117,20 +117,21 @@ public class MDParser {
 			int textStart=0;
 			for(int i=0; i<tokenList.size();i++){
 				//문자열의 중간에 링크 토큰이 나오는 경우
-				if(tokenList.get(i) instanceof T_link && !(tokenList.get(i+1) instanceof T_link)){
+				if(tokenList.get(i) instanceof T_link && (tokenList.get(i+1) instanceof T_link)){
 					addTextNode(tempNode, nodeList, textStart, i-1);
 					textStart = setLink(tempNode,nodeList,textStart);
+					i=textStart;
 				}
 				else if(tokenList.get(i) instanceof T_emphasis){
-					
+
 					String text = tokenList.get(i-1).getContent();
 					if(text!="\n")
 					{
 						nodeList.add(new N_TextNode(text));
 					}
-					
+
 					N_emphasis em =new N_emphasis();
-					
+
 					String emSymbol;
 					emSymbol=tokenList.get(i).getContent().replaceAll("\\*", "");
 					em.setText(emSymbol);
@@ -139,8 +140,8 @@ public class MDParser {
 
 				}
 			}
-			
-			//text token 처리 
+
+			//text token 처리
 			addTextNode(tempNode,nodeList,textStart,tokenList.size());
 		}
 		//첫 토큰 : New Line
@@ -180,9 +181,9 @@ public class MDParser {
 					val[1] = "";
 				else
 					val[1] = split[1];
-				
+
 				urlList.put(linkText, val);
-				
+
 			}
 		}
 		//첫 토큰 List
@@ -194,8 +195,8 @@ public class MDParser {
 			//일단 list에서 \t쓰는 경우
 			for(int i=nodeList.size()-1;i>=0;i--){
 				if(nodeList.get(i) instanceof N_newLine)
-					continue;	
-				
+					continue;
+
 				if(nodeList.get(i) instanceof N_List){
 					N_List lastNode = (N_List)nodeList.get(i);
 					//리스트 안에 blockquote가 나오는 경우, 리스트노드 안에다가 bq 추가하고 리턴
@@ -205,7 +206,7 @@ public class MDParser {
 							blockquote(tempNode,lastNode.getList());
 							return;
 						}
-					
+
 					//리스트 사이에 \t이 나오는 경우
 					String text ="\n<br>"+concatString(tokenList,0);
 					lastNode.concatToList(text);
@@ -215,7 +216,7 @@ public class MDParser {
 				else
 					break;
 			}
-			
+
 			//\t이런걸로 시작하지만 특별히 어떤 노드 안에 있는 경우가 아니라면 그냥 텍스트노드로 만들어서 추가
 			String text = concatString(tokenList,0);
 			N_TextNode textNode = new N_TextNode(text);
@@ -237,34 +238,34 @@ public class MDParser {
 		else{
 			System.out.println("다른 토큰는 아직 구현 안됨");
 		}
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 //==========================================================================//
 //==========================================================================//
 //							노드별 메소드										//
 //==========================================================================//
 //==========================================================================//
-	
-	
-	
+
+
+
 //==========header: 토큰리스트랑 노드리스트 받아서 삽입하기===================
 	public void addTextNode(Node tempNode, LinkedList<Node> nodeList, int start, int end){
 		List<Token> tokenList = tempNode.getTokenList();
-		String text = new String();	
-		
+		String text = new String();
+
 		//Text token의 범위 안에서 한개의 String으로 합침
 		for(int i=start;i<end;i++)
 			text = text.concat(tokenList.get(i).getContent()+ " ");
-		
+
 		nodeList.add(new N_TextNode(text));
 	}
 
-	
-	
+
+
 	public boolean header(Node tempNode, LinkedList<Node> nodeList){
 		//----------------------------------- Header Node -------------------------------------------
 		List<Token> tokenList = tempNode.getTokenList();
@@ -327,19 +328,19 @@ public class MDParser {
 		else //code shouldn't reach here
 			return false;
 	}
-	
+
 	public boolean em(Node newNode, LinkedList<Node> nodeList){/************************************************************************************************/
 		List<Token> tokenList = newNode.getTokenList();
 		N_emphasis em =new N_emphasis();
 		String text = "";
-		
+
 		text=tokenList.get(0).getContent().replaceAll("\\*", "");
 		em.setText(text);
 		nodeList.add(em);
-		
+
 		return true;
 	}
-	
+
 	public boolean hr(Node newNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = newNode.getTokenList();
 		if(tokenList.get(0).getContent().contains("***")||
@@ -354,7 +355,7 @@ public class MDParser {
 			N_Hr hr = new N_Hr();
 			nodeList.add(hr);
 			hr.addNewParagraph();
-			
+
 			return true;
 		}
 		else{
@@ -362,15 +363,15 @@ public class MDParser {
 			return false;
 		}
 	}
-	
+
 	public boolean blockquote(Node newNode, LinkedList<Node> nodeList){
 		List<Token> tokenList = newNode.getTokenList();
 		Node lastNode;
 		//blockquote가 아니면 false리턴
-		if(tokenList.get(0).getContent().equals(">") != true){	
+		if(tokenList.get(0).getContent().equals(">") != true){
 			return false;
 		}
-		
+
 		if(tokenList.get(0).getContent().equals(">") == true)// && tokenList.get(1).getContent().equals(">") == true){
 		{
 			//이번 노드가 nested BQ인 경우
@@ -416,7 +417,7 @@ public class MDParser {
 						tokenList.remove(0);
 						Node node = new Node(tokenList);
 						addNodeToList(node, bq.getList());
-						addNodeToList(bq, nodeList);	
+						addNodeToList(bq, nodeList);
 						return true;
 					}
 				}
@@ -434,19 +435,19 @@ public class MDParser {
 						node.getTokenList().add(0,token);
 						addNodeToList(node, ((N_Blockquote)lastNode).getList());
 						return true;
-					}			
+					}
 				}
 				else
 					return false;
-			
+
 			}
 		}
 		return false;
 	}
-					
-					
+
+
 	public boolean backslashEsc(char c){
-		if(c=='\\' || c=='\'' || c=='*' || c=='_' || c=='{' || c=='}' || 
+		if(c=='\\' || c=='\'' || c=='*' || c=='_' || c=='{' || c=='}' ||
 		   c=='[' || c==']' || c=='(' || c==')' || c=='#' || c=='.' || c=='!'){
 			return true;
 		}
@@ -454,8 +455,8 @@ public class MDParser {
 			return false;
 		}
 	}
-	
-	
+
+
 	public int setLink(Node tempnode, LinkedList<Node> nodeList, int startIndex){
 		List<Token> tokenList = tempnode.getTokenList();
 
@@ -468,7 +469,7 @@ public class MDParser {
 			linkNode.setLinkText(((T_link)tokenList.get(startIndex)).getText());
 			linkNode.setLinkKey(((T_link)tokenList.get(startIndex+1)).getText());
 			nodeList.add(linkNode);
-			
+
 			//다음 TextToken이 시작하는 위치 리턴
 			return startIndex+2;
 		}
@@ -480,7 +481,7 @@ public class MDParser {
 			//[~~~](~~~) 이런 경우, linkText와 linkKey 는 동일
 			linkNode.setLinkKey(((T_link)tokenList.get(startIndex)).getText());
 			nodeList.add(linkNode);
-			
+
 			//Hashmap에 key, url, title추가
 			String key = linkNode.getLinkKey();
 			String url = ((T_link)tokenList.get(startIndex+1)).getUrl();
@@ -488,7 +489,7 @@ public class MDParser {
 			String[] val = new String[2];
 			val[0] = url.toLowerCase(); val[1] = title;
 			urlList.put(key,val);
-			
+
 			//다음 TextToken이 시작하는 위치 리턴
 			return startIndex+2;
 		}
@@ -504,17 +505,17 @@ public class MDParser {
 		}
 		else
 			return -1;
-		
+
 	}
-	
+
 	public void setList(Node tempnode, LinkedList<Node> nodeList){
 		List<Token> tokenList = tempnode.getTokenList();
 		char firstChar = tokenList.get(0).getContent().charAt(0);
-		
+
 		//마지막 노드가 리스트긴 한데....
 		if(!(nodeList.isEmpty()) && nodeList.getLast() instanceof N_List){
 			N_List lastNode = (N_List)nodeList.getLast();
-			//지금 들어온 노드가 이전 리스트에 추가되는 경우라면 (* 였는데 또 *나 +가 오는 경우 혹은 1. 뒤에 3. 이런경우) 
+			//지금 들어온 노드가 이전 리스트에 추가되는 경우라면 (* 였는데 또 *나 +가 오는 경우 혹은 1. 뒤에 3. 이런경우)
 			if((lastNode.getListType().equals("ul") && (firstChar=='*'||firstChar=='+'||firstChar=='-'))||
 			   (lastNode.getListType().equals("ol") && !(firstChar=='*'||firstChar=='+'||firstChar=='-')))
 			{
@@ -528,11 +529,11 @@ public class MDParser {
 				else
 					listNode = new N_List("ol");
 				String text = concatString(tokenList,1);
-				
+
 				listNode.addToList(text);
-				nodeList.add(listNode);				
+				nodeList.add(listNode);
 			}
-			
+
 		}
 		//nested가 아니라 처음 시작되는 경우
 		else{
@@ -541,24 +542,24 @@ public class MDParser {
 				listNode = new N_List("ul");
 			else
 				listNode = new N_List("ol");
-			
+
 			String text = concatString(tokenList,1);
 			listNode.addToList(text);
-			
+
 			nodeList.add(listNode);
 		}
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 //	public void printAllNode(){
 //		for(int i=0;i<nodeList.size();i++)
 //			nodeList.get(i).printNodeInfo();
 //	}
-	
-	
+
+
 	public String concatString(List<Token> tokenList, int startIndex){
 		String text = new String();
 		for(int i=startIndex;i<tokenList.size();i++){

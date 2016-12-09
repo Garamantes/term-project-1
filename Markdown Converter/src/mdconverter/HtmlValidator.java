@@ -1,9 +1,5 @@
 package mdconverter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import org.w3c.tidy.Tidy;
 
@@ -13,7 +9,11 @@ public class HtmlValidator {
 		Tidy tidy = new Tidy();
 		OutputStream out = null;
 		try {
-			InputStream in = new FileInputStream("src/"+fileName);
+
+			//CMD ¿ë
+			File upOne = new File(System.getProperty("user.dir")).getParentFile();
+			String filepath = upOne.getAbsolutePath();
+			InputStream in = new FileInputStream(filepath+"/src/"+fileName);
 
 			tidy.parse(in,out);
 			in.close();
