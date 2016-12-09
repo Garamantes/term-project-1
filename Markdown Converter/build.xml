@@ -1,44 +1,35 @@
-<project name="term-project-1" default="compile" basedir=".">
-
-  <description> </description>
-
-  <!-- global properties -->
-  <property name="source.dir" location="src"/>
-  <property name="build.dir" location="bin"/>
-  <property name="lib.dir" location="lib"/>
-
-  <path id="classpath">
-    <fileset dir="${lib.dir}" includes="**/*.jar" />
-   </path>
-
-   <taskdef name="tidy" classname="org.w3c.tidy.ant.JTidyTask">
-    <classpath>
-      <pathelement location="${lib.dir}/jtidy.jar"/>
-    </classpath>
-  </taskdef>
+<project name="MD_Parser" default="compile" basedir=".">
+  <property name="src.dir" value="${basedir}/src/mdconverter" />
+  <property name="bin.dir" value="${basedir}/bin" />
+  <property name="lib.dir" value="${basedir}/lib/jtidy-r938.jar" />
 
   <target name="init" description="setup project directories">
-    <mkdir dir="${build.dir}"/>
-    <mkdir dir="${doc.dir}"/>
+    <mkdir dir="${bin.dir}"/>
   </target>
 
-  <target name="compile" depends="init" description="compile">
-    <javac srcdir="${source.dir}" destdir="${build.dir}" classpathref="classpath" includeantruntime="false">
-
+  <target name="compile" depends="clean" description="compile">
+    <javac srcdir="${src.dir}" destdir="${bin.dir}" classpath="${lib.dir}" includeantruntime="false">
     </javac>
   </target>
 
-  <target name="doc" depends="init" description="generate documentation">
-    <javadoc sourcepath="${source.dir}" destdir="{doc.dir}"/>
-  </target>
-
-
 
   <target name="clean" description="clean">
-    <delete dir="${build.dir}"/>
-    <delete dir="${doc.dir}"/>
+    <delete dir="${bin.dir}"/>
+    <mkdir dir="${bin.dir}"/>
     <delete>
-      <fileset defaultexcludes="no" dir="${source.dir}" includes="**/*~"/>
+      <fileset defaultexcludes="no" dir="${src.dir}" includes="**/*~"/>
     </delete>
   </target>
+
+  <target name="jar" depends="compile">
+    <jar destfile="${bin.dir}/output.jar" basedir="${bin.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="mdconverter.Main" />
+      </manifest>
+    </jar>
+  </target>
+
+
+
+
 </project>
