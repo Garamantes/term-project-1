@@ -6,8 +6,10 @@
 0. Locate the md file (ex test.md) in src folder
 1. Go to root directory (Where build.xml is located)
 2. >ant jar
+
    This command will compile class files to bin folder
 3. Move to bin folder and run Main class with input commands
+
    ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
 4. out.html file will be created in src folder.
 
