@@ -23,24 +23,21 @@
 
 3. -input command
 > you must type only .md file.  
-> you must input md files to same directory of CLI_mian.class file.   
+> you must input md files to src directory.   
 > you can input several .md files     
 >
 > ex) java CLI_main -input ex1.md ex2.me  -output html_file_name1.html html_file_name2.html -option option_command 
 
 4. -output command
 > you must type only .html file.    
-> html files are created to directory of CLI_mian.class file.   
+> html files are created to src directory.   
 > you can output several html files.  
 > <strong>But, You must enter the same number of md files and html files.</strong>
 >
 > ex) java CLI_main -input ex1.md ex2.md -output ex1.html ex2.html -option option_command 
 
 5. overriding html file
-> This CLI is not support overriding html files. 
->
-> if you create file of exist name, you can see message : 
-> please enter the html file of another name.
+> This CLI default is overriding html output files. 
 
 6. option command
 > option command has 3 types ( plain, fancy, slide ).    
