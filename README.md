@@ -3,12 +3,12 @@
 
 ##How to build and run the project with Windows command line
 
-0. Locate the md file in src folder
+0. Locate the md file (ex test.md) in src folder
 1. Go to root directory (Where build.xml is located)
 2. >ant jar
-   This command will compile and build output.jar file in the bin folder.
-3. Move to bin folder and run output.jar with input commands
-   ex) ..\bin>java -jar output.jar -input test.md -output out.html
+   This command will compile class files to bin folder
+3. Move to bin folder and run Main class with input commands
+   ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
 4. out.html file will be created in src folder.
 
 -----
