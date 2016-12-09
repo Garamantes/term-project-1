@@ -3,7 +3,7 @@
 
 ##How to build and run the project with Windows command line
 
-0. Locate the md file (ex test.md) in src folder
+0. Locate the md file (ex. test.md) in src folder
 1. Go to root directory (Where build.xml is located)
 2. \> ant jar
 
@@ -12,7 +12,8 @@
 
    ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
    
-4. out.html file will be created in src folder.
+4. jtidy will automaticaly validate the output html file and tell the number of warnings and errors.
+5. Output html file (ex. out.html) will be created in src folder.
 
 -----
 
