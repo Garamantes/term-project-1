@@ -78,8 +78,8 @@ public class Main {
 	
 		
 		//JTidy ·Î html °Ë»ç
-		//HtmlValidator jtidy = new HtmlValidator();
-		//jtidy.checkHtml(outputFile.get(0));
+		HtmlValidator jtidy = new HtmlValidator();
+		jtidy.checkHtml(outputFile.get(0));
 		
 		
 		
