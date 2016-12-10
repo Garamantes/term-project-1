@@ -182,7 +182,7 @@ public class MDParser {
 				else
 					val[1] = split[1];
 
-				urlList.put(linkText, val);
+				urlList.put(linkText.toLowerCase(), val);
 
 			}
 		}
@@ -488,7 +488,7 @@ public class MDParser {
 			String title = ((T_link)tokenList.get(startIndex+1)).getTitle();
 			String[] val = new String[2];
 			val[0] = url.toLowerCase(); val[1] = title;
-			urlList.put(key,val);
+			urlList.put(key.toLowerCase(),val);
 
 			//다음 TextToken이 시작하는 위치 리턴
 			return startIndex+2;
