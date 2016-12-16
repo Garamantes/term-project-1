@@ -2,12 +2,13 @@ package mdconverter;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class PlainVisitor implements MDElementVisitor{
+public class PlainVisitor extends ConcreteVisitor{
 	public String startHtml(){
 		String str="<!DOCTYPE html>\n<html>\n<head>\n<meta content=\"text/html; charset=UTF-8\">\n</head>\n<body>\n";
 		return str;
 	}
 	
+
 	
 	public String endHtml(){
 		String str="\n</body>\n</html>";
@@ -49,6 +50,14 @@ public class PlainVisitor implements MDElementVisitor{
 				str = str.concat(visit((N_newLine)list.get(i)));
 			}else if(list.get(i) instanceof N_Blockquote){
 				str = str.concat(visit((N_Blockquote)list.get(i)));
+			}else if(list.get(i) instanceof N_Link){
+				str = str.concat(visit((N_Link)list.get(i)));
+			}else if(list.get(i) instanceof N_List){
+				str = str.concat(visit((N_List)list.get(i)));
+			}else if(list.get(i) instanceof N_emphasis){
+				str = str.concat(visit((N_emphasis)list.get(i)));
+			}else if(list.get(i) instanceof N_Hr){
+				str = str.concat(visit((N_Hr)list.get(i)));
 			}else{}
 
 		}
