@@ -1,28 +1,26 @@
 package mdconverter;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-//import org.w3c.tidy.Tidy;
-//import org.w3c.tidy.TidyUtils;
 
 public class Main {
+	static String option = new String(); //option 변수 (Plain, Fancy, Slide 등)
 	public static void main(String[] args) {
-		String option = new String();	//option 변수 (Plain, Fancy, Slide 등)
 		ArrayList<String> inputFile = new ArrayList<String>();		//.md 파일이름 리스트
 		ArrayList<String> outputFile = new ArrayList<String>();		//.html 파일이름 리스트
+		ConcreteVisitor visitor = null;
 		
 		//Command Line 입력 오류 확인
-		checkCLI(args, inputFile, outputFile, option);
-		
+		checkCLI(args, inputFile, outputFile);
+
 		//Parser 객체 생성
 		MDParser mdParser = new MDParser();
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 		
@@ -56,17 +54,21 @@ public class Main {
 			}
 			//*/
 
-			
+			 
 			//Visitor 패턴으로 plain 스타일 html 적용
-			PlainVisitor plainvisitor = new PlainVisitor();
-			out.write(plainvisitor.startHtml());
+			if(option.equals("plain"))
+				visitor = new PlainVisitor();
+			else if(option.equals("fancy"))
+				visitor = new FancyVisitor();
+			
+			out.write(visitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				//System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
 				if(i>0 && mdParser.nodeList.get(i) instanceof N_TextNode && mdParser.nodeList.get(i-1) instanceof N_TextNode)
 					out.write("<br>");
-				out.write(mdParser.nodeList.get(i).accept(plainvisitor));
+				out.write(mdParser.nodeList.get(i).accept(visitor));
 			}
-			out.write(plainvisitor.endHtml());
+			out.write(visitor.endHtml());
 			
 			//파일닫기
 			in.close();
@@ -95,12 +97,14 @@ public class Main {
 		System.out.println("	you can input several md files");
 		System.out.println("	you can output several html files\n");
 		System.out.println("	But, You must enter the same number of md files and html files \n");
-		System.out.println("	this CLI default is supporting overriding html files");
+		System.out.println("	you must input md files to same directory of CLI_mian.class file.");
+		System.out.println("	html files are created to directory of CLI_mian.class file.\n");
+		System.out.println("	this CLI is not support overriding html files");
 		System.out.println("----------------------------------------------------------------");
 	}
 
 	//CLI 입력 확인
-	public static void checkCLI(String[] args, ArrayList<String> inputFile, ArrayList<String> outputFile, String option){
+	public static void checkCLI(String[] args, ArrayList<String> inputFile, ArrayList<String> outputFile){
 		int index_input = -1;
 		int index_output = -1;
 		int index_option = -1;
@@ -125,12 +129,12 @@ public class Main {
 				else if(args[i].equals("-output") || args[i].equals("-OUTPUT"))
 					index_output = i;
 				else if(args[i].equals("-option") || args[i].equals("-OPTION"))
-					index_output = i;
+					index_option = i;
 				i++;
 			}
 			//input, output을 안썼거나 input, output, option 순서를 틀린 경우
 			if(index_input == -1 || index_output == -1 ||
-				index_input>index_output || index_option>index_output ||
+				index_input>index_output || index_output>index_option ||
 				index_output - index_input == 1){
 				System.out.println("Wrong command. Check -help for commnad line syntax");
 				System.exit(0);
@@ -150,11 +154,13 @@ public class Main {
 			//option 변수에 option값 전달
 			if(index_option	== -1)
 				option = "plain";
-			else if(!args[index_option+1].equals("plain") ||!args[index_option+1].equals("fancy") ||!args[index_option+1].equals("slide")){
+			else if(args[index_option+1].equals("plain") ||args[index_option+1].equals("fancy") ||args[index_option+1].equals("slide")){
+				option = args[index_option+1];
+			}else{
 				System.out.println("Wrong option");
 				System.exit(0);
-			}else
-				option = args[index_option+1];
+			}
+				System.out.println(option);
 
 			//inputFile리스트에 input 파일이름 저장, outputFile리스트에 output 파일이름 저장
 			for(int k=1;k<index_output-index_input;k++){
@@ -170,9 +176,9 @@ public class Main {
 		
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 
