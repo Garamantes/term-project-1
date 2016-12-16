@@ -9,36 +9,36 @@ public class Main {
 		ArrayList<String> inputFile = new ArrayList<String>();		//.md 파일이름 리스트
 		ArrayList<String> outputFile = new ArrayList<String>();		//.html 파일이름 리스트
 		ConcreteVisitor visitor = null;
-		
+
 		//Command Line 입력 오류 확인
 		checkCLI(args, inputFile, outputFile);
 
 		//Parser 객체 생성
 		MDParser mdParser = new MDParser();
-		
+
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
-		
+
 		File fin = new File(filepath+"/src/"+inputFile.get(0));
 		File fout = new File(filepath+"/src/"+outputFile.get(0));
 		FileReader fr = null;
 		FileWriter fw = null;
 		BufferedReader in = null;
 		BufferedWriter out = null;
-		
+
 		try {
 			fr = new FileReader(fin);
 			in = new BufferedReader(fr);
 			fw = new FileWriter(fout);
 			out = new BufferedWriter(fw);
-			
+
 			String temp=new String();
-			
+
 			//.md파일에서 temp로 한줄씩 읽어서 그 문자열을 처리
 			while((temp = in.readLine()) != null){
 				//System.out.println(temp);
@@ -46,7 +46,7 @@ public class Main {
 				tempNode.setToken(mdParser.tokenize(temp));
 				mdParser.addNodeToList(tempNode, mdParser.nodeList);
 			}
-			
+
 			///*
 			//어떤 노드들이 있는지 확인용. 최종본엔 있을 필요 없음.
 			for(int i=0;i<mdParser.nodeList.size();i++){
@@ -54,13 +54,13 @@ public class Main {
 			}
 			//*/
 
-			 
+
 			//Visitor 패턴으로 plain 스타일 html 적용
 			if(option.equals("plain"))
 				visitor = new PlainVisitor();
 			else if(option.equals("fancy"))
 				visitor = new FancyVisitor();
-			
+
 			out.write(visitor.startHtml());
 			for(int i=0;i<mdParser.nodeList.size();i++){
 				//System.out.println(mdParser.nodeList.get(i).accept(plainvisitor));
@@ -69,22 +69,22 @@ public class Main {
 				out.write(mdParser.nodeList.get(i).accept(visitor));
 			}
 			out.write(visitor.endHtml());
-			
+
 			//파일닫기
 			in.close();
 			out.close();
 			fr.close();
 			fw.close();
-			
+
 		} catch (IOException e) {e.printStackTrace();}
-	
-		
+
+
 		//JTidy 로 html 검사
 		HtmlValidator jtidy = new HtmlValidator();
 		jtidy.checkHtml(outputFile.get(0));
-		
-		
-		
+
+
+
 	}
 
 
@@ -111,12 +111,12 @@ public class Main {
 		int input_count = 0;
 		int output_count = 0;
 
-			
-		
+
+
 		if(args.length == 0){
 			System.out.println("No argument");
 			System.exit(0);
-		}		
+		}
 		//1. args0 이 help => help page 띄움
 		else if(args[0].equals("-help") || args[0].equals("-HELP"))
 			printHelp();
@@ -145,12 +145,12 @@ public class Main {
 				output_count = index_option - index_output;
 			else
 				output_count = args.length - index_output;
-			
+
 			if(input_count != output_count || input_count <= 0 || output_count <= 0){
 				System.out.println("Number of input files and output files doesn't match");
 				System.exit(0);
 			}
-			
+
 			//option 변수에 option값 전달
 			if(index_option	== -1)
 				option = "plain";
@@ -168,17 +168,17 @@ public class Main {
 				outputFile.add(args[index_output+k]);
 			}
 		}
-		
-		
+
+
 		//확장자 확인
 		if(checkExtension(inputFile, "in")==false || checkExtension(outputFile, "out") == false)
 			System.exit(0);
-		
+
 		//파일 읽기/쓰기 준비
 		//이클립스용
-		File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
+		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
 		//CMD 용
-		//File upOne = new File(System.getProperty("user.dir")).getParentFile();
+		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
 
@@ -190,7 +190,7 @@ public class Main {
 				System.exit(0);
 			}
 		}
-		
+
 		//Output파일 확인
 		for(int i=0;i<outputFile.size();i++){
 			File file = new File(filepath+"/src/"+outputFile.get(0));
@@ -215,19 +215,19 @@ public class Main {
 								outputFile.add(i,newFile);
 								outputFile.remove(i+1);
 								i--;
-								break;								
+								break;
 							}
 						}
 					}else{
 						//overwrite
 					}
-				} catch (IOException e) {e.printStackTrace();}	
+				} catch (IOException e) {e.printStackTrace();}
 			}
 		}
-	
+
 	}
-	
-	
+
+
 	//.md, .html 확장자 확인하는 메소드
 	public static boolean checkExtension(ArrayList<String> list, String type){
 		for(int i=0;i<list.size();i++){
