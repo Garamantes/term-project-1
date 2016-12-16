@@ -19,7 +19,7 @@ public class Main {
 		//파일 읽기/쓰기 준비
 		//이클립스용
 		//File upOne = new File(System.getProperty("user.dir")).getAbsoluteFile();
-		//CMD 용
+		//CMD  용
 		File upOne = new File(System.getProperty("user.dir")).getParentFile();
 
 		String filepath = upOne.getAbsolutePath();
