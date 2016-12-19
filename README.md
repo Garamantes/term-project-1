@@ -18,6 +18,7 @@
 6. if you want to see the fancy version
 
    ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html -option fancy
+   
 -----
 
 ##Manual
