@@ -10,11 +10,14 @@
    This command will compile java files to bin folder
 3. Move to bin folder and run Main class with input commands (jtidy-r938.jar file will be copied to bin folder when building with Ant)
 
-   ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html
+   ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html -option plain
    
 4. jtidy will automaticaly validate the output html file and tell the number of warnings and errors.
 5. Output html file (ex. out.html) will be created in src folder.
 
+6. if you want to see the fancy version
+
+   ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html -option fancy
 -----
 
 ##Manual
@@ -44,6 +47,5 @@
 > This CLI default is overriding html output files. 
 
 6. option command
-> option command has 3 types ( plain, fancy, slide ).    
-> you can enter command line, except -option and option command.   
-> if you not type -option or option command, default option is plain .  
+> option command has 2 types ( plain, fancy).    
+> you can enter command line, you could not except -option and option command.   
