@@ -92,15 +92,27 @@ public class Main {
 	public static void printHelp(){
 		System.out.println("----------------------------------------------------------------");
 		System.out.println("	command line format : java CLI_main -input md_file_name.md -output html_file_name.html -option option_command");
-		System.out.println("	option command : plain / fancy / slide\n");
-		System.out.println("	you can omit -option command");
+		System.out.println("	option command : plain / fancy\n");
+		System.out.println("	you can not omit -option command");
 		System.out.println("	you can input several md files");
 		System.out.println("	you can output several html files\n");
 		System.out.println("	But, You must enter the same number of md files and html files \n");
-		System.out.println("	you must input md files to same directory of CLI_mian.class file.");
-		System.out.println("	html files are created to directory of CLI_mian.class file.\n");
-		System.out.println("	this CLI is not support overriding html files");
+		System.out.println("	you must input md files to src directory.");
+		System.out.println("	html files are created to src directory.\n");
+		System.out.println("	This CLI default is overriding html output files.");	
+		
+		System.out.println("\n\n	***Directory help***");
+		System.out.println("\n	1. Locate the md file (ex. test.md) in src folder");
+		System.out.println("\n	2. Go to root directory (Where build.xml is located)");
+		System.out.println("\n	3. TYPE! > ant jar\n	This command will compile java files to bin folder");
+		System.out.println("\n	4. Move to bin folder and run Main class with input commands \n(jtidy-r938.jar file will be copied to bin folder when building with Ant) \n	ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html -option plain");
+		System.out.println("\n	5. jtidy will automaticaly validate the output html file and tell the number of warnings and errors.");
+		System.out.println("\n	6. Output html file (ex. out.html) will be created in src folder.");
+
+		System.out.println("\n	7. if you want to see the fancy version\n	ex) ...\bin>java -cp .;jtidy-r938.jar mdconverter.Main -input test.md -output out.html -option fancy");
+
 		System.out.println("----------------------------------------------------------------");
+		System.exit(0);
 	}
 
 	//CLI 입력 확인
